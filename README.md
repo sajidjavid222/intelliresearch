@@ -1,147 +1,143 @@
-# ResearchPilot 🛰️
+<div align="center">
 
-A multi-agent autonomous **research assistant** for academic researchers,
-professors, PhD scholars, and students. Ask in plain English; ten specialized
-agents fan out across academic sources and bring back **papers, datasets,
-grants, conferences, patents, open-source code, and collaborators** — then
-synthesize a literature review and identify research gaps.
+# 🛰️ IntelliResearch
 
-> Built to run **with zero configuration** (SQLite + key-free public APIs), and
-> to scale to production (PostgreSQL, Redis/Celery, Qdrant, LLMs) by adding env
-> vars. Every external call degrades gracefully — no key, no crash.
+### Your entire research team, in one search.
+
+A multi-agent AI platform that discovers, analyzes, and organizes academic
+research — papers, datasets, grants, conferences, patents, code, and
+collaborators — then writes a cited literature review for you.
+
+**[🚀 Live Demo →](https://intelliresearch-frontend.onrender.com)**
+
+![Made with](https://img.shields.io/badge/made%20with-♥%20by%20Shah%20Sajid%20Naqshbandi-ec4899)
+![Next.js](https://img.shields.io/badge/Next.js-14-000)
+![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688)
+![Gemini](https://img.shields.io/badge/AI-Gemini-4c66f5)
+![Deploy](https://img.shields.io/badge/deployed-Render-46a3ff)
+
+</div>
+
+> **Note on the live demo:** it runs on a free tier that sleeps after ~15 min of
+> inactivity, so the **first** request may take 30–60s to wake up. Then it's fast.
 
 ---
 
-## ✨ What's implemented
+## 📸 Screenshots
+
+<!--
+  To add screenshots: save images into a `docs/` folder (e.g. docs/search.png)
+  then uncomment the lines below. Tip: open the live demo, run a search, and
+  screenshot the search page, the citation graph, and the dashboard.
+
+![Search](docs/search.png)
+![Citation graph](docs/graph.png)
+![Dashboard](docs/dashboard.png)
+-->
+
+*Try it on the [live demo](https://intelliresearch-frontend.onrender.com) — search “diffusion models”, open the **Chat** tab, or visit the **Graph** page.*
+
+---
+
+## ✨ What it does
+
+Ask a question in plain English. An **orchestrator** parses your intent and
+dispatches **10 specialized agents** that fan out across academic sources,
+rank what they find, and synthesize the results.
 
 ### The 10 agents
-| # | Agent | Live sources | Status |
-|---|-------|--------------|--------|
-| 1 | **Paper Discovery** | arXiv, Semantic Scholar, OpenAlex, Crossref | ✅ live |
-| 2 | **Literature Review** | LLM over discovered papers | ✅ (LLM optional) |
-| 3 | **Dataset Discovery** | Hugging Face, OpenML, Papers With Code | ✅ live |
-| 4 | **Grant Discovery** | NSF API + curated ANRF/DST/CSIR/DBT/DRDO/ISRO/Google/MS/Horizon feed | ✅ live + curated |
-| 5 | **Conference / CFP** | Curated CORE-ranked CFP feed (IEEE/ACM/USENIX/…) | ✅ curated |
-| 6 | **Open-Source Code** | GitHub, Papers With Code | ✅ live |
-| 7 | **Patent Intelligence** | Google Patents (key-free), USPTO PatentsView (keyed) | ✅ live |
-| 8 | **Research Gap** | LLM over the literature | ✅ (LLM optional) |
-| 9 | **Proposal Writing** | LLM → Markdown / DOCX / PDF | ✅ (LLM optional) |
-| 10 | **Collaboration** | OpenAlex authors + citation networks | ✅ live |
+| Agent | Sources |
+|-------|---------|
+| 📄 **Paper Discovery** | arXiv · Semantic Scholar · OpenAlex · Crossref · PubMed · DOAJ · DBLP |
+| 📚 **Literature Review** | Gemini, grounded in the discovered papers |
+| 🗂️ **Dataset Discovery** | Hugging Face · OpenML · Papers With Code |
+| 💸 **Grant Discovery** | NSF API + curated ANRF/DST/CSIR/DBT/DRDO/ISRO/Google/MS/Horizon feed |
+| 🗓️ **Conference / CFP** | Curated CORE-ranked feed (IEEE/ACM/USENIX/…) |
+| 💻 **Open-Source Code** | GitHub · Papers With Code (with reproducibility scoring) |
+| 🛡️ **Patent Intelligence** | Google Patents · USPTO PatentsView |
+| 🔍 **Research Gap** | Gemini analysis → ranked opportunities & thesis topics |
+| 📝 **Proposal Writing** | Gemini → Markdown / DOCX / PDF |
+| 🤝 **Collaboration** | OpenAlex authors & citation networks |
 
-### Platform features
-- **Semantic search** — an orchestrator parses intent and auto-selects agents.
-- **Ranking** — relevance + citations + recency + influence; **seminal-paper** detection.
-- **Research dashboard** — saved papers/datasets/grants, saved searches, reading history.
-- **Automated monitoring** — subscribe to topics, get **alerts** for new papers/grants/datasets/CFPs.
-- **Knowledge graph** endpoint for **citation-network visualization**.
-- **Exports** — BibTeX, and proposals to Markdown/DOCX/PDF.
-- **Auth** — email/password (JWT); Google OAuth scaffold.
+### Highlight features
+- 💬 **Chat with your papers** — ask questions answered with inline citations (RAG).
+- 🕸️ **Citation network graph** — interactive, zoomable, click-through author/paper map.
+- 👤 **Author profiles** — h-index, citations, top papers & a disambiguation picker.
+- 🌐 **Multi-language** — translate abstracts & reviews into 14 languages on demand.
+- 📁 **Collections & notes** — organize saved items into folders, annotate them.
+- ⚖️ **Compare papers** — side-by-side table of up to 4 papers.
+- 🔔 **Topic monitoring** — subscribe to topics, get alerts for new results.
+- 📤 **Exports** — BibTeX, RIS (Zotero/Mendeley), and proposals to DOCX/PDF.
+- 🎛️ **Detailed filters**, ⌘K **command palette**, recent searches, dark mode, mobile-ready.
 
 ---
 
 ## 🧱 Tech stack
-- **Frontend:** Next.js 14 (App Router) · TypeScript · TailwindCSS
-- **Backend:** FastAPI · Python · async SQLAlchemy
-- **Agents:** LangGraph-style asyncio supervisor (no extra deps required)
-- **LLMs:** Anthropic Claude / OpenAI GPT (optional) with heuristic fallback
-- **DB:** SQLite by default · PostgreSQL in production
-- **Optional infra:** Redis + Celery (monitoring), Qdrant (vectors), S3 storage
+
+| Layer | Tech |
+|-------|------|
+| **Frontend** | Next.js 14 (App Router) · TypeScript · TailwindCSS |
+| **Backend** | FastAPI · Python · async SQLAlchemy |
+| **AI** | Google Gemini (with automatic model fallback) |
+| **Database** | PostgreSQL (production) · SQLite (local, zero-config) |
+| **Caching** | Redis when available, else in-process |
+| **Auth** | JWT (email/password) + Google Sign-In |
+| **Deploy** | Render (Docker) — see [`render.yaml`](render.yaml) |
+
+Every external call **degrades gracefully** — missing keys or rate limits fall
+back instead of crashing.
 
 ---
 
-## 🚀 Quick start (no Docker, no keys)
+## 🚀 Run locally (zero config)
 
-### 1. Backend
+**Backend**
 ```bash
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env            # optional — defaults work
-uvicorn app.main:app --reload   # http://localhost:8000  (docs at /docs)
+cp .env.example .env          # optional — works without keys
+uvicorn app.main:app --reload # → http://localhost:8000  (docs at /docs)
 ```
 
-### 2. Frontend
+**Frontend** (in a second terminal)
 ```bash
 cd frontend
 npm install
-npm run dev                     # http://localhost:3000
+npm run dev                   # → http://localhost:3000
 ```
 
-Open **http://localhost:3000** and try:
-> *"Find recent papers on indoor Wi-Fi localization using drones"*
+Open **http://localhost:3000** and search
+*“indoor Wi-Fi localization using drones.”*
 
-The frontend proxies `/api/*` to the backend (see `next.config.mjs`).
+> Add `GEMINI_API_KEY` to `backend/.env` (free key at
+> [aistudio.google.com/apikey](https://aistudio.google.com/apikey)) to unlock the
+> AI features — chat, reviews, gaps, proposals, and translation.
 
 ---
 
-## 🐳 Run with Docker (full stack: Postgres + Redis + Qdrant)
-```bash
-docker compose up --build
-# frontend → http://localhost:3000   backend → http://localhost:8000
-```
+## ☁️ Deploy
+
+One-click-ish on Render via the included Blueprint — full guide in
+**[DEPLOY.md](DEPLOY.md)**. Also runs anywhere with `docker compose up --build`.
 
 ---
 
-## 🔑 Optional configuration (`backend/.env`)
-Everything works without these, but they unlock more:
+## 📂 Project structure
 
-| Variable | Effect |
-|----------|--------|
-| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | AI literature reviews, gap analysis, proposals |
-| `GITHUB_TOKEN` | Higher GitHub rate limits |
-| `SEMANTIC_SCHOLAR_API_KEY` | Higher Semantic Scholar limits |
-| `DATABASE_URL` | Switch to PostgreSQL |
-| `GOOGLE_CLIENT_ID/SECRET` | Google OAuth login |
-
----
-
-## 📡 Key API endpoints
 ```
-POST /api/search                  # orchestrated multi-agent semantic search
-GET  /api/search/papers?q=...     # individual agents
-GET  /api/search/datasets|code|patents|conferences|grants|collaborators?q=...
-POST /api/search/literature-review
-POST /api/search/research-gaps
-POST /api/search/proposal?topic=...
-GET  /api/export/bibtex?q=...
-GET  /api/export/proposal?topic=...&fmt=md|docx|pdf
-GET  /api/monitoring/graph?q=...  # citation-network nodes/links
-POST /api/monitoring/run          # trigger subscription alerts
-POST /api/auth/register | /api/auth/login
-GET/POST /api/dashboard/items|searches|subscriptions|alerts|history
-```
-Interactive docs: **http://localhost:8000/docs**
-
----
-
-## 📁 Project layout
-```
-backend/
-  app/
-    main.py              # FastAPI app + router wiring
-    agents/              # orchestrator, discovery, analysis, ranking
-    connectors/          # arXiv, S2, OpenAlex, HF, GitHub, patents, grants…
-    api/routes/          # auth, search, dashboard, export, monitoring
-    services/            # llm, export (bibtex/docx/pdf), monitoring
-    db/                  # SQLAlchemy models + async engine
-    worker.py            # optional Celery beat for scheduled monitoring
-frontend/
-  app/                   # /, /login, /dashboard (App Router)
-  components/            # Nav, result Cards, AnalysisPanels
-  lib/                   # api client + types
-docker-compose.yml
+backend/   FastAPI app — agents, connectors, API routes, services, db
+frontend/  Next.js app — pages, components, lib
+render.yaml   Render Blueprint (db + backend + frontend)
+DEPLOY.md     Step-by-step deployment guide
 ```
 
 ---
 
-## ⚖️ Notes on data sources
-- Sources with **open APIs** are queried **live** (arXiv, Semantic Scholar,
-  OpenAlex, Crossref, Hugging Face, OpenML, Papers With Code, GitHub, Google
-  Patents, NSF). OpenAlex/Semantic Scholar **index IEEE, ACM, Springer,
-  Elsevier, Nature** and more, so those publishers are covered transitively.
-- **Conferences** and most **grants** have no unified free API; ResearchPilot
-  ships a curated, ranked seed feed and filters it by your query/profile. Point
-  `CONF_FEED_URL` at a live ccfddl-style feed in production.
-- Respect each provider's terms and rate limits in production deployments.
-```
-```
+<div align="center">
+
+Made with ♥ by **Shah Sajid Naqshbandi**
+
+*“Research is to see what everybody else has seen, and to think what nobody else has thought.”*
+
+</div>
