@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     SECRET_KEY: str = "change-me-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
+    # Password for the /admin analytics page. If unset, /admin is disabled.
+    ADMIN_TOKEN: Optional[str] = None
 
     # --- Database ---
     # Defaults to local SQLite. For production set a Postgres URL, e.g.:

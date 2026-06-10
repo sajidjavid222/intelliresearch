@@ -50,6 +50,10 @@ export const api = {
       `/api/monitoring/graph?q=${encodeURIComponent(q)}`
     ),
 
+  // Admin analytics
+  adminStats: (token: string) =>
+    req<any>("/api/admin/stats", { headers: { "X-Admin-Token": token } }),
+
   // Discovery extras
   trending: () => req<{ topic: string; tag: string; heat: number }[]>("/api/discover/trending"),
   stats: () => req<any>("/api/discover/stats"),
