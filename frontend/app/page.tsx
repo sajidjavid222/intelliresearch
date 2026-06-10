@@ -316,7 +316,7 @@ export default function Home() {
       {/* ---------- Results ---------- */}
       {res && !loading && (
         <>
-          <div className="card flex flex-wrap items-center gap-3 p-4">
+          <div className="card relative z-[25] flex flex-wrap items-center gap-3 p-4">
             <div>
               <p className="text-sm font-semibold">
                 {totalResults} results for{" "}
