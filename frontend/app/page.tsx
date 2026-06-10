@@ -15,6 +15,7 @@ import {
 import { GapsPanel, ReviewPanel } from "@/components/AnalysisPanels";
 import { ChatPanel } from "@/components/ChatPanel";
 import { ExportMenu } from "@/components/ExportMenu";
+import { ProposalBanner } from "@/components/ProposalBanner";
 import { EmptyState, Icon, SkeletonCards } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { Counter, TrendChart } from "@/components/Charts";
@@ -374,6 +375,9 @@ export default function Home() {
             </div>
           )}
 
+          {/* AI proposal generator — surfaced so it's discoverable */}
+          {res.papers.length > 0 && <ProposalBanner topic={res.query} />}
+
           {/* Sticky tabs */}
           <div role="tablist" aria-label="Result categories" className="sticky top-[68px] z-20 -mx-1 overflow-x-auto rounded-xl border border-ink-200/60 bg-white/80 px-1 py-1.5 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/70">
             <div className="flex gap-1">
@@ -464,7 +468,7 @@ export default function Home() {
             <div className="stagger grid gap-3 sm:grid-cols-3">
               {[
                 { icon: <Icon.paper className="h-5 w-5" />, t: "Discover & rank", d: "arXiv, Semantic Scholar, OpenAlex, PubMed & more — with seminal-paper detection." },
-                { icon: <Icon.chat className="h-5 w-5" />, t: "Chat & review", d: "Ask questions answered with citations; get a full AI literature review." },
+                { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word)." },
                 { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go." },
               ].map((c, i) => (
                 <div key={c.t} className="card card-hover group p-5" style={{ ["--i" as any]: i }}>
