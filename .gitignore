@@ -1,0 +1,25 @@
+# --- Secrets (NEVER commit) ---
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env*.local
+
+# --- Python ---
+backend/.venv/
+**/__pycache__/
+*.pyc
+*.db
+backend/researchpilot.db
+
+# --- Node / Next ---
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# --- OS / editor ---
+.DS_Store
+*.log
+.idea/
+.vscode/
