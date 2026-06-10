@@ -100,7 +100,23 @@ export default function Home() {
 
     const onEvt = (e: any) => { setQ(e.detail); run(e.detail); };
     window.addEventListener("rp:search", onEvt);
-    return () => window.removeEventListener("rp:search", onEvt);
+
+    // Logo click → reset to a clean homepage (clear results, query, URL).
+    const onReset = () => {
+      setRes(null);
+      setQ("");
+      setTab("papers");
+      setError("");
+      setTrends([]);
+      setFilters(EMPTY_FILTERS);
+      window.history.replaceState(null, "", window.location.pathname);
+    };
+    window.addEventListener("rp:reset", onReset);
+
+    return () => {
+      window.removeEventListener("rp:search", onEvt);
+      window.removeEventListener("rp:reset", onReset);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

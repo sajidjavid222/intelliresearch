@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
 import { applyTheme, getInitialTheme, type Theme } from "@/lib/theme";
+import { clearLastSearch } from "@/lib/searchStore";
 import { Icon } from "@/components/ui";
 
 const LINKS = [
@@ -91,12 +92,21 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-30 border-b border-ink-200/70 bg-white/70 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/60">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="group flex items-center gap-2.5">
+        <Link
+          href="/"
+          onClick={() => {
+            // Logo = fresh homepage: drop the persisted search so results
+            // don't reappear, and reset the home page if it's already mounted.
+            clearLastSearch();
+            window.dispatchEvent(new Event("rp:reset"));
+          }}
+          className="group flex items-center gap-2.5"
+        >
           <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 text-white shadow-glow">
             <span className="text-lg">✦</span>
           </span>
           <span className="text-lg font-bold tracking-tight">
-Intelli<span className="text-gradient">Research</span>
+            Intelli<span className="text-gradient">Research</span>
           </span>
         </Link>
 
