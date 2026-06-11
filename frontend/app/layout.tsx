@@ -7,6 +7,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { PaperDrawerProvider } from "@/components/PaperDrawer";
 import { CompareProvider } from "@/components/Compare";
 import { ScrollTop } from "@/components/ScrollTop";
+import { ServerWaking } from "@/components/ServerWaking";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -70,6 +71,7 @@ export default function RootLayout({
             <CompareProvider>
               <CommandPalette />
               <ScrollTop />
+              <ServerWaking />
               <Nav />
               <main className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
                 {children}
