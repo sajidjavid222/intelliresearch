@@ -72,6 +72,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        {/* Ambient aurora background — slow-drifting gradient orbs behind the glass UI. */}
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-40 left-[8%] h-[34rem] w-[34rem] animate-aurora rounded-full bg-brand-400/25 blur-3xl dark:bg-brand-500/15" />
+          <div className="absolute -right-32 top-1/4 h-[30rem] w-[30rem] animate-aurora-slow rounded-full bg-accent-400/20 blur-3xl dark:bg-accent-500/15" />
+          <div className="absolute -bottom-48 left-1/3 h-[36rem] w-[36rem] animate-aurora rounded-full bg-sky-300/20 blur-3xl dark:bg-sky-500/10" style={{ animationDelay: "-12s" }} />
+        </div>
         <ToastProvider>
           <PaperDrawerProvider>
             <CompareProvider>

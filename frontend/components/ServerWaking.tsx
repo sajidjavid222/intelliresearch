@@ -54,7 +54,7 @@ export function ServerWaking() {
   if (!waking && !justWoke) return null;
 
   return (
-    <div className="fixed left-1/2 top-[70px] z-40 w-[min(92vw,460px)] -translate-x-1/2 animate-fade-up">
+    <div className="fixed left-1/2 top-[82px] z-40 w-[min(92vw,460px)] -translate-x-1/2 animate-fade-up">
       {waking ? (
         <div className="flex items-center gap-3 rounded-2xl border border-amber-300/60 bg-amber-50/95 px-4 py-3 text-sm shadow-lift backdrop-blur dark:border-amber-500/30 dark:bg-amber-500/15">
           <span className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-amber-300 border-t-amber-600" />

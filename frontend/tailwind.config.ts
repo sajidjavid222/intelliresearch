@@ -56,6 +56,30 @@ const config: Config = {
           "0%,100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        // Liquid-glass morphing blob (border-radius + drift, GPU-friendly).
+        blob: {
+          "0%,100%": {
+            borderRadius: "42% 58% 60% 40% / 45% 45% 55% 55%",
+            transform: "translate(0,0) scale(1)",
+          },
+          "33%": {
+            borderRadius: "60% 40% 35% 65% / 55% 60% 40% 45%",
+            transform: "translate(24px,-18px) scale(1.06)",
+          },
+          "66%": {
+            borderRadius: "38% 62% 55% 45% / 60% 35% 65% 40%",
+            transform: "translate(-18px,14px) scale(0.97)",
+          },
+        },
+        // Slow ambient drift for the page-wide aurora layer.
+        aurora: {
+          "0%,100%": { transform: "translate(0,0) rotate(0deg) scale(1)" },
+          "50%": { transform: "translate(-4%,3%) rotate(8deg) scale(1.08)" },
+        },
+        shine: {
+          "0%": { transform: "translateX(-120%) skewX(-12deg)" },
+          "100%": { transform: "translateX(220%) skewX(-12deg)" },
+        },
       },
       animation: {
         "fade-up": "fade-up .5s cubic-bezier(.2,.8,.2,1) both",
@@ -64,6 +88,10 @@ const config: Config = {
         "pulse-ring": "pulse-ring 1.4s ease-out infinite",
         float: "float 5s ease-in-out infinite",
         "gradient-pan": "gradient-pan 8s ease infinite",
+        blob: "blob 16s ease-in-out infinite",
+        "blob-slow": "blob 22s ease-in-out infinite reverse",
+        aurora: "aurora 26s ease-in-out infinite",
+        "aurora-slow": "aurora 38s ease-in-out infinite reverse",
       },
     },
   },

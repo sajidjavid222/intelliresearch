@@ -90,8 +90,8 @@ export function Nav() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-ink-200/70 bg-white/70 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/60">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+    <header className="sticky top-3 z-30 px-3 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/60 bg-white/70 px-4 py-2.5 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-ink-950/60 sm:px-5">
         <Link
           href="/"
           onClick={() => {
@@ -172,7 +172,7 @@ export function Nav() {
       {menuOpen && (
         <div className="sm:hidden">
           <div
-            className="fixed inset-0 top-[57px] z-20 bg-ink-950/30 backdrop-blur-sm animate-fade-in"
+            className="fixed inset-0 top-[72px] z-20 bg-ink-950/30 backdrop-blur-sm animate-fade-in"
             onClick={() => setMenuOpen(false)}
           />
           <nav className="absolute inset-x-0 z-30 animate-fade-up border-b border-ink-200/70 bg-white px-4 py-4 shadow-lift dark:border-ink-800 dark:bg-ink-950">

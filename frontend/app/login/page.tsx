@@ -55,7 +55,12 @@ export default function LoginPage() {
   return (
     <div className="mx-auto mt-6 grid max-w-4xl gap-6 md:mt-12 md:grid-cols-2">
       {/* Left: value prop */}
-      <div className="hidden flex-col justify-center rounded-3xl border border-ink-200/60 bg-gradient-to-br from-brand-500 to-accent-600 p-8 text-white shadow-lift md:flex">
+      <div
+        className="relative hidden animate-gradient-pan flex-col justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500 via-accent-500 to-brand-600 p-8 text-white shadow-lift md:flex"
+        style={{ backgroundSize: "220% 220%" }}
+      >
+        <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 animate-blob bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-16 -left-10 h-56 w-56 animate-blob-slow bg-white/10 blur-2xl" />
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15 text-2xl backdrop-blur">
           ✦
         </span>

@@ -58,28 +58,59 @@
   }
 }
 
+@keyframes shine {
+  0% { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%) skewX(-12deg); }
+}
+
 @layer components {
+  /* Glassmorphism card: 14px backdrop blur, translucent layer (light mode kept
+     at 75%+ for 4.5:1 text contrast), 1px light border + top light reflection. */
   .card {
-    @apply rounded-2xl border border-ink-200/70 bg-white/90 shadow-soft backdrop-blur-sm
-      dark:border-ink-800 dark:bg-ink-900/70;
+    @apply relative rounded-2xl border border-white/60 bg-white/75 shadow-soft
+      dark:border-white/10 dark:bg-ink-900/55;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .card::before {
+    content: "";
+    @apply pointer-events-none absolute inset-x-4 top-0 h-px rounded-full;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  }
+  .dark .card::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   }
   .card-hover {
-    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift
-      hover:border-brand-300/70 dark:hover:border-brand-500/40;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-glow
+      hover:border-brand-300/70 dark:hover:border-brand-400/40;
   }
 
   .btn {
     @apply inline-flex select-none items-center justify-center gap-2 rounded-xl px-4 py-2.5
-      text-sm font-semibold transition-all duration-150 active:scale-[.97]
+      text-sm font-semibold transition-all duration-200 active:scale-[.97]
       disabled:pointer-events-none disabled:opacity-50;
   }
+  /* Primary button with an animated light-shine sweep on hover. */
   .btn-primary {
-    @apply btn bg-gradient-to-b from-brand-500 to-brand-600 text-white shadow-soft
-      hover:from-brand-500 hover:to-brand-700 hover:shadow-glow;
+    @apply btn relative overflow-hidden bg-gradient-to-br from-brand-500 via-brand-600 to-accent-600
+      text-white shadow-soft hover:shadow-glow;
+    background-size: 160% 160%;
+  }
+  .btn-primary::after {
+    content: "";
+    @apply pointer-events-none absolute inset-y-0 w-1/3 opacity-0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  .btn-primary:hover::after {
+    @apply opacity-100;
+    animation: shine 0.9s ease forwards;
   }
   .btn-ghost {
-    @apply btn border border-ink-200/80 bg-white/60 text-ink-700 hover:bg-ink-50
-      dark:border-ink-800 dark:bg-ink-900/40 dark:text-ink-200 dark:hover:bg-ink-800/60;
+    @apply btn border border-white/60 bg-white/50 text-ink-700 hover:bg-white/80
+      dark:border-white/10 dark:bg-ink-900/40 dark:text-ink-200 dark:hover:bg-ink-800/60;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   .btn-soft {
     @apply btn bg-brand-50 text-brand-700 hover:bg-brand-100

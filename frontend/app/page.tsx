@@ -198,10 +198,12 @@ export default function Home() {
   return (
     <div className="space-y-6">
       {/* ---------- Hero ---------- */}
-      <section className="relative overflow-hidden rounded-3xl border border-ink-200/60 bg-white/70 p-8 shadow-soft dark:border-ink-800 dark:bg-ink-900/60 sm:p-10">
+      <section className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-8 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/50 sm:p-10">
         <div className="dot-grid pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 animate-float rounded-full bg-brand-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-10 h-56 w-56 animate-float rounded-full bg-accent-400/15 blur-3xl" style={{ animationDelay: "1.5s" }} />
+        {/* Liquid-glass morphing blobs */}
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 animate-blob bg-gradient-to-br from-brand-300/40 to-brand-500/25 blur-2xl dark:from-brand-500/25 dark:to-brand-400/10" />
+        <div className="pointer-events-none absolute -bottom-28 left-6 h-64 w-64 animate-blob-slow bg-gradient-to-tr from-accent-300/35 to-accent-500/20 blur-2xl dark:from-accent-500/20 dark:to-accent-400/10" />
+        <div className="pointer-events-none absolute right-1/4 top-1/3 h-40 w-40 animate-blob bg-sky-300/25 blur-2xl dark:bg-sky-500/10" style={{ animationDelay: "-7s" }} />
         <div className="relative animate-fade-up">
           <span className="chip border border-brand-200/70 bg-white/70 text-brand-700 dark:border-brand-500/30 dark:bg-ink-900/60 dark:text-brand-300">
             ✦ 10 specialized AI agents · powered by Gemini
@@ -402,7 +404,7 @@ export default function Home() {
           {res.papers.length > 0 && <ProposalBanner topic={res.query} />}
 
           {/* Sticky tabs */}
-          <div role="tablist" aria-label="Result categories" className="sticky top-[68px] z-20 -mx-1 overflow-x-auto rounded-xl border border-ink-200/60 bg-white/80 px-1 py-1.5 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/70">
+          <div role="tablist" aria-label="Result categories" className="sticky top-[76px] z-20 -mx-1 overflow-x-auto rounded-xl border border-ink-200/60 bg-white/80 px-1 py-1.5 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/70">
             <div className="flex gap-1">
               {TABS.map((t) => {
                 const n = count(res, t.key);
@@ -615,8 +617,13 @@ export default function Home() {
 
       {/* ---------- Closing CTA (landing only) ---------- */}
       {!res && !loading && !error && (
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-accent-700 p-10 text-center text-white shadow-lift sm:p-14">
+        <section
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-accent-600 to-brand-700 p-10 text-center text-white shadow-lift animate-gradient-pan sm:p-14"
+          style={{ backgroundSize: "220% 220%" }}
+        >
           <div className="dot-grid pointer-events-none absolute inset-0 opacity-40" />
+          <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 animate-blob bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute -right-10 bottom-0 h-48 w-48 animate-blob-slow bg-white/10 blur-2xl" />
           <div className="relative">
             <h2 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
               Start your next literature review in seconds.
