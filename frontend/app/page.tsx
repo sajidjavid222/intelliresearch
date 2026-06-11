@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { api, withColdStartRetry } from "@/lib/api";
 import type { SearchResponse } from "@/lib/types";
 import {
   CollaboratorCard,
@@ -71,6 +71,7 @@ export default function Home() {
   const [tab, setTab] = useState<string>("papers");
   const [error, setError] = useState("");
   const [step, setStep] = useState(0);
+  const [wakingRetry, setWakingRetry] = useState(false);
   const [trends, setTrends] = useState<{ year: number; count: number }[]>([]);
   const [trending, setTrending] = useState<{ topic: string; tag: string; heat: number }[]>([]);
   const [filters, setFilters] = useState<PaperFilters>(EMPTY_FILTERS);
@@ -155,6 +156,7 @@ export default function Home() {
     setRes(null);
     setTrends([]);
     setStep(0);
+    setWakingRetry(false);
     setFilters(EMPTY_FILTERS); // fresh filters per search
     const timer = setInterval(
       () => setStep((s) => Math.min(s + 1, AGENT_STEPS.length - 1)),
@@ -163,7 +165,12 @@ export default function Home() {
     setShowRecent(false);
     api.trends(query).then((t) => setTrends(t.series)).catch(() => {});
     try {
-      const r = await api.search(query, undefined, 15);
+      // Auto-retry through a free-tier cold start instead of erroring out.
+      const r = await withColdStartRetry(
+        () => api.search(query, undefined, 15),
+        { onWaking: () => setWakingRetry(true) }
+      );
+      setWakingRetry(false);
       setRes(r);
       const first = TABS.find((t) => count(r, t.key) > 0);
       // Honor a shared ?tab= if it has content, else first non-empty tab.
@@ -182,6 +189,7 @@ export default function Home() {
     } finally {
       clearInterval(timer);
       setLoading(false);
+      setWakingRetry(false);
     }
   }
 
@@ -298,16 +306,27 @@ export default function Home() {
       {/* ---------- Loading ---------- */}
       {loading && (
         <>
-          <div className="card animate-fade-in flex items-center gap-4 p-5">
+          <div className={`card animate-fade-in flex items-center gap-4 p-5 ${wakingRetry ? "border-amber-300/60 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10" : ""}`}>
             <span className="relative grid h-11 w-11 shrink-0 place-items-center">
-              <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-400/40" />
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-brand-500 text-white">
-                <Icon.search className="h-5 w-5" />
+              <span className={`absolute inset-0 animate-pulse-ring rounded-full ${wakingRetry ? "bg-amber-400/40" : "bg-brand-400/40"}`} />
+              <span className={`grid h-11 w-11 place-items-center rounded-full text-white ${wakingRetry ? "bg-amber-500" : "bg-brand-500"}`}>
+                {wakingRetry ? <span className="text-lg">😴</span> : <Icon.search className="h-5 w-5" />}
               </span>
             </span>
             <div className="min-w-0">
-              <p className="font-semibold text-ink-800 dark:text-ink-100">Agents at work</p>
-              <p className="truncate text-sm text-ink-500">{AGENT_STEPS[step]}</p>
+              {wakingRetry ? (
+                <>
+                  <p className="font-semibold text-amber-900 dark:text-amber-200">Waking up the server…</p>
+                  <p className="text-sm text-amber-700/80 dark:text-amber-300/80">
+                    It napped (free hosting). Holding your search — it'll run automatically in a few seconds.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-ink-800 dark:text-ink-100">Agents at work</p>
+                  <p className="truncate text-sm text-ink-500">{AGENT_STEPS[step]}</p>
+                </>
+              )}
             </div>
           </div>
           <SkeletonCards n={4} />

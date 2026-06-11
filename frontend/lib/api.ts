@@ -9,21 +9,64 @@ function authHeaders(): Record<string, string> {
   return t ? { Authorization: `Bearer ${t}` } : {};
 }
 
+export interface ApiError extends Error {
+  status?: number;
+  coldStart?: boolean; // gateway error → backend likely waking up
+}
+
 async function req<T>(path: string, opts: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    ...opts,
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-      ...(opts.headers || {}),
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      ...opts,
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+        ...(opts.headers || {}),
+      },
+    });
+  } catch (e) {
+    // Network failure (server unreachable) — treat as a possible cold start.
+    const err: ApiError = new Error("Network error — the server may be waking up.");
+    err.coldStart = true;
+    throw err;
+  }
   if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(msg || `Request failed: ${res.status}`);
+    const raw = await res.text().catch(() => "");
+    // 502/503/504 from the gateway means the backend is down/booting.
+    const cold = res.status === 502 || res.status === 503 || res.status === 504;
+    const err: ApiError = new Error(
+      cold ? "Server is waking up…" : raw.slice(0, 200) || `Request failed: ${res.status}`
+    );
+    err.status = res.status;
+    err.coldStart = cold;
+    throw err;
   }
   const ct = res.headers.get("content-type") || "";
   return (ct.includes("application/json") ? res.json() : res.text()) as Promise<T>;
+}
+
+/** Retry a request through a cold start (gateway 502/503/504 or network error). */
+export async function withColdStartRetry<T>(
+  fn: () => Promise<T>,
+  opts: { attempts?: number; delayMs?: number; onWaking?: () => void } = {}
+): Promise<T> {
+  const { attempts = 8, delayMs = 5000, onWaking } = opts;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      const err = e as ApiError;
+      if (err.coldStart && i < attempts - 1) {
+        onWaking?.();
+        await new Promise((r) => setTimeout(r, delayMs));
+        continue;
+      }
+      throw e;
+    }
+  }
+  // unreachable, but satisfies the type checker
+  return fn();
 }
 
 export const api = {
