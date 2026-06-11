@@ -34,12 +34,12 @@ import {
 } from "@/lib/searchStore";
 
 const EXAMPLES = [
-  { icon: "🧠", text: "Large language models for code generation" },
-  { icon: "🩺", text: "CRISPR gene editing recent breakthroughs" },
-  { icon: "🛰️", text: "Indoor Wi-Fi localization using drones" },
-  { icon: "💸", text: "Grants and conferences for federated learning" },
-  { icon: "👁️", text: "Diffusion models — survey, datasets & code" },
-  { icon: "⚛️", text: "Quantum machine learning open problems" },
+  "Large language models for code generation",
+  "CRISPR gene editing recent breakthroughs",
+  "Indoor Wi-Fi localization using drones",
+  "Grants and conferences for federated learning",
+  "Diffusion models — survey, datasets & code",
+  "Quantum machine learning open problems",
 ];
 
 const TABS = [
@@ -206,9 +206,9 @@ export default function Home() {
           <span className="chip border border-brand-200/70 bg-white/70 text-brand-700 dark:border-brand-500/30 dark:bg-ink-900/60 dark:text-brand-300">
             ✦ 10 specialized AI agents · powered by Gemini
           </span>
-          <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl">
             Your entire{" "}
-            <span className="text-gradient-animated">research team,</span>
+            <span className="text-gradient-animated italic">research team,</span>
             <br className="hidden sm:block" /> in one search.
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-relaxed text-ink-500 dark:text-ink-300 sm:text-lg">
@@ -266,10 +266,10 @@ export default function Home() {
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">Try</span>
             {EXAMPLES.map((e) => (
-              <button key={e.text} onClick={() => { setQ(e.text); run(e.text); }}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-ink-200/70 bg-white/60 px-3 py-1.5 text-sm text-ink-600 transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-600 hover:shadow-soft dark:border-ink-800 dark:bg-ink-900/50 dark:text-ink-300">
-                <span>{e.icon}</span>
-                {e.text}
+              <button key={e} onClick={() => { setQ(e); run(e); }}
+                className="group inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-ink-200/70 bg-white/60 px-3 py-1.5 text-sm text-ink-600 transition-colors duration-200 hover:border-brand-300 hover:bg-brand-50/50 hover:text-brand-600 dark:border-ink-800 dark:bg-ink-900/50 dark:text-ink-300 dark:hover:bg-brand-500/10">
+                <Icon.search className="h-3.5 w-3.5 text-ink-300 transition-colors group-hover:text-brand-500" />
+                {e}
               </button>
             ))}
           </div>
@@ -310,7 +310,7 @@ export default function Home() {
             <span className="relative grid h-11 w-11 shrink-0 place-items-center">
               <span className={`absolute inset-0 animate-pulse-ring rounded-full ${wakingRetry ? "bg-amber-400/40" : "bg-brand-400/40"}`} />
               <span className={`grid h-11 w-11 place-items-center rounded-full text-white ${wakingRetry ? "bg-amber-500" : "bg-brand-500"}`}>
-                {wakingRetry ? <span className="text-lg">😴</span> : <Icon.search className="h-5 w-5" />}
+                {wakingRetry ? <Icon.moon className="h-5 w-5" /> : <Icon.search className="h-5 w-5" />}
               </span>
             </span>
             <div className="min-w-0">
@@ -371,10 +371,10 @@ export default function Home() {
                   toast("Shareable link copied.", "success");
                 }}
               >
-                🔗 Share
+                <Icon.share className="h-4 w-4" /> Share
               </button>
               <a className="btn-ghost" href={`/graph?q=${encodeURIComponent(res.query)}`}>
-                🕸 Citation network
+                <Icon.network className="h-4 w-4" /> Citation network
               </a>
               <ExportMenu query={res.query} />
             </div>
@@ -385,7 +385,7 @@ export default function Home() {
             <div className="card animate-fade-up p-5">
               <div className="mb-1 flex items-center gap-2">
                 <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
-                  📈
+                  <Icon.trend className="h-4 w-4" />
                 </span>
                 <div>
                   <p className="text-sm font-bold">Publication trend</p>
@@ -611,6 +611,36 @@ export default function Home() {
             </p>
           </aside>
         </div>
+      )}
+
+      {/* ---------- Closing CTA (landing only) ---------- */}
+      {!res && !loading && !error && (
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-accent-700 p-10 text-center text-white shadow-lift sm:p-14">
+          <div className="dot-grid pointer-events-none absolute inset-0 opacity-40" />
+          <div className="relative">
+            <h2 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
+              Start your next literature review in seconds.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+              Free to use. No setup. Ten AI agents, live academic sources, and a
+              cited review — from a single search.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setTimeout(() => (document.querySelector('input[aria-label="Search research"]') as HTMLInputElement)?.focus(), 450);
+                }}
+                className="btn cursor-pointer bg-white !px-6 !py-3 text-brand-700 shadow-lift transition-colors duration-200 hover:bg-brand-50"
+              >
+                Try a search <Icon.arrowRight className="h-4 w-4" />
+              </button>
+              <a href="/login" className="btn cursor-pointer border border-white/30 bg-white/10 !px-6 !py-3 text-white backdrop-blur transition-colors duration-200 hover:bg-white/20">
+                Create a free account
+              </a>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );

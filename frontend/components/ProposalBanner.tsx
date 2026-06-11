@@ -18,14 +18,14 @@ export function ProposalBanner({ topic }: { topic: string }) {
     <div className="relative overflow-hidden rounded-2xl border border-accent-200/60 bg-gradient-to-br from-accent-50 via-white to-brand-50 p-5 shadow-soft dark:border-accent-500/30 dark:from-accent-950/40 dark:via-ink-900 dark:to-brand-950/30">
       <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent-400/20 blur-2xl" />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent-500 to-brand-500 text-2xl text-white shadow-glow">
-          📝
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent-500 to-brand-500 text-white shadow-glow">
+          <Icon.fileText className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-bold">Draft a research proposal</h3>
-            <span className="chip bg-accent-100 text-[10px] font-bold uppercase text-accent-700 dark:bg-accent-500/20 dark:text-accent-300">
-              AI
+            <span className="chip gap-1 bg-accent-100 text-[10px] font-bold uppercase text-accent-700 dark:bg-accent-500/20 dark:text-accent-300">
+              <Icon.sparkles className="h-3 w-3" /> AI
             </span>
           </div>
           <p className="mt-0.5 text-sm text-ink-500 dark:text-ink-300">

@@ -206,7 +206,7 @@ export function CitationGraph({
                   stroke="white" strokeWidth={hover === n.id ? 2.5 : 1.5} />
                 <text textAnchor="middle" dy="0.32em"
                   className="pointer-events-none select-none fill-white text-[9px] font-bold">
-                  {isPaper ? "📄" : "👤"}
+                  {isPaper ? "P" : "A"}
                 </text>
                 {showLabel && (
                   <text textAnchor="middle" y={n.r + 11}

@@ -144,7 +144,7 @@ export function GapsPanel({ g }: { g: ResearchGapResult }) {
       {g.thesis_topics?.length > 0 && (
         <div className="rounded-xl border border-purple-200/60 bg-purple-50/50 p-4 dark:border-purple-500/20 dark:bg-purple-500/10">
           <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-purple-700 dark:text-purple-300">
-            💡 Candidate Thesis Topics
+            <Icon.sparkles className="h-4 w-4" /> Candidate Thesis Topics
           </h4>
           <ul className="space-y-1.5 text-sm text-ink-700 dark:text-ink-200">
             {g.thesis_topics.map((t, i) => (

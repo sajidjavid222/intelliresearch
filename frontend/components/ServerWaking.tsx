@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/ui";
 
 /**
  * Free-tier hosts (Render) sleep after idle and take ~30–60s to cold-start.
@@ -58,7 +59,9 @@ export function ServerWaking() {
         <div className="flex items-center gap-3 rounded-2xl border border-amber-300/60 bg-amber-50/95 px-4 py-3 text-sm shadow-lift backdrop-blur dark:border-amber-500/30 dark:bg-amber-500/15">
           <span className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-amber-300 border-t-amber-600" />
           <div className="text-amber-900 dark:text-amber-200">
-            <p className="font-semibold">Waking up the server… 😴</p>
+            <p className="flex items-center gap-1.5 font-semibold">
+              Waking up the server… <Icon.moon className="h-4 w-4" />
+            </p>
             <p className="text-xs text-amber-700/80 dark:text-amber-300/80">
               It naps when idle (free hosting) — first load takes ~30–60s. Hang tight!
             </p>
@@ -66,8 +69,8 @@ export function ServerWaking() {
         </div>
       ) : (
         <div className="flex items-center gap-3 rounded-2xl border border-emerald-300/60 bg-emerald-50/95 px-4 py-3 text-sm shadow-lift backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/15">
-          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-xs font-bold text-white">
-            ✓
+          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-white">
+            <Icon.check className="h-3 w-3" />
           </span>
           <p className="font-semibold text-emerald-900 dark:text-emerald-200">
             Server's awake — you're good to go!

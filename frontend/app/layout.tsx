@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Crimson_Pro, Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { ToastProvider } from "@/components/Toast";
@@ -10,6 +10,12 @@ import { ScrollTop } from "@/components/ScrollTop";
 import { ServerWaking } from "@/components/ServerWaking";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+// Academic serif for display headings — the "research journal" feel.
+const crimson = Crimson_Pro({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
@@ -61,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${crimson.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -77,7 +83,7 @@ export default function RootLayout({
                 {children}
               </main>
               <footer className="mx-auto max-w-7xl px-6 py-12 text-center">
-                <blockquote className="mx-auto max-w-xl text-balance text-sm italic text-ink-500 dark:text-ink-400">
+                <blockquote className="mx-auto max-w-xl text-balance font-display text-base italic text-ink-500 dark:text-ink-400">
                   “Research is to see what everybody else has seen, and to think
                   what nobody else has thought.”
                   <span className="mt-1 block text-xs not-italic text-ink-400">

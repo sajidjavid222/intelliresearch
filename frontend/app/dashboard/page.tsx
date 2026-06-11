@@ -85,7 +85,7 @@ export default function Dashboard() {
             {(user.name || user.email)[0]?.toUpperCase()}
           </span>
           <div>
-            <h1 className="text-xl font-bold">
+            <h1 className="font-display text-2xl font-semibold">
               {user.name ? `Hi, ${user.name.split(" ")[0]}` : "Your dashboard"}
             </h1>
             <p className="text-sm text-ink-400">

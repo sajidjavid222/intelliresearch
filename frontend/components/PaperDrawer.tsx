@@ -111,7 +111,7 @@ export function PaperDrawerProvider({ children }: { children: ReactNode }) {
               <div className="flex flex-wrap items-center gap-2">
                 {paper.publisher && (
                   <span className="chip bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300">
-                    🏛 {paper.publisher}
+                    {paper.publisher}
                   </span>
                 )}
                 {paper.is_seminal && (

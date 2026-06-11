@@ -61,7 +61,7 @@ export function ChatPanel({ topic, papers }: { topic: string; papers: Paper[] })
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-ink-100 px-5 py-4 dark:border-ink-800">
         <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 text-white">
-          💬
+          <Icon.chat className="h-5 w-5" />
         </span>
         <div>
           <h3 className="font-bold">Chat with these papers</h3>

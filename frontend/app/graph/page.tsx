@@ -33,9 +33,9 @@ export default function GraphPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <h1 className="flex items-center gap-2.5 font-display text-3xl font-semibold tracking-tight">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent-50 text-accent-600 dark:bg-accent-500/15 dark:text-accent-300">
-            🕸
+            <Icon.network className="h-5 w-5" />
           </span>
           Citation network
         </h1>
@@ -88,7 +88,7 @@ export default function GraphPage() {
 
       {!data && !loading && (
         <EmptyState
-          icon={<span>🕸</span>}
+          icon={<Icon.network className="h-5 w-5" />}
           title="Enter a topic to build its citation network"
           hint="Papers and their authors are mapped as an interactive force-directed graph."
         />

@@ -59,7 +59,7 @@ export default function LoginPage() {
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15 text-2xl backdrop-blur">
           ✦
         </span>
-        <h2 className="mt-5 text-2xl font-bold leading-tight">
+        <h2 className="mt-5 font-display text-3xl font-semibold leading-tight">
           Your research, on autopilot.
         </h2>
         <p className="mt-2 text-sm text-white/80">

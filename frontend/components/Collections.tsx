@@ -97,7 +97,7 @@ function ItemRow({
             }`}
             title={hasNote ? "Edit note" : "Add note"}
           >
-            {hasNote ? "📝 Note" : "＋ Note"}
+            {hasNote ? "Note ✓" : "＋ Note"}
           </button>
           <select
             value={item.collection_id || ""}

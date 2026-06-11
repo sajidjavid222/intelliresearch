@@ -146,7 +146,7 @@ export function CommandPalette() {
                   }`}
                 >
                   <span className="flex items-center gap-3">
-                    <span className="text-base">🔥</span>
+                    <Icon.trend className="h-4 w-4 text-accent-500" />
                     {t.topic}
                   </span>
                   <span className="chip-muted text-[10px]">{t.tag}</span>

@@ -87,7 +87,11 @@ const PUB_STYLES: Record<string, string> = {
 function PublisherBadge({ name }: { name?: string }) {
   if (!name) return null;
   const cls = PUB_STYLES[name] || "bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300";
-  return <span className={`chip font-semibold ${cls}`}>🏛 {name}</span>;
+  return (
+    <span className={`chip gap-1 font-semibold ${cls}`}>
+      <Icon.building className="h-3 w-3" /> {name}
+    </span>
+  );
 }
 
 // "Find this paper on" deep links — Scholar/ResearchGate have no API, so we
@@ -224,7 +228,7 @@ export function DatasetCard({ d }: { d: Dataset }) {
         {d.modalities.map((m) => (
           <span key={m} className="chip bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300">{m}</span>
         ))}
-        {d.license && <span className="chip-muted">⚖ {d.license}</span>}
+        {d.license && <span className="chip-muted">License: {d.license}</span>}
         {typeof d.downloads === "number" && (
           <span className="chip-muted">↓ {d.downloads.toLocaleString()}</span>
         )}
@@ -275,10 +279,30 @@ export function ConferenceCard({ c }: { c: Conference }) {
         )}
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-ink-600 dark:text-ink-300">
-        {c.submission_deadline && <div>📝 Submit: <b className="font-semibold">{c.submission_deadline}</b></div>}
-        {c.notification_date && <div>📬 Notify: {c.notification_date}</div>}
-        {c.acceptance_rate && <div>📊 Accept: {c.acceptance_rate}</div>}
-        {c.location && <div>📍 {c.location}</div>}
+        {c.submission_deadline && (
+          <div className="flex items-center gap-1.5">
+            <Icon.calendar className="h-3.5 w-3.5 shrink-0 text-ink-400" />
+            Submit: <b className="font-semibold">{c.submission_deadline}</b>
+          </div>
+        )}
+        {c.notification_date && (
+          <div className="flex items-center gap-1.5">
+            <Icon.bell className="h-3.5 w-3.5 shrink-0 text-ink-400" />
+            Notify: {c.notification_date}
+          </div>
+        )}
+        {c.acceptance_rate && (
+          <div className="flex items-center gap-1.5">
+            <Icon.trend className="h-3.5 w-3.5 shrink-0 text-ink-400" />
+            Accept: {c.acceptance_rate}
+          </div>
+        )}
+        {c.location && (
+          <div className="flex items-center gap-1.5">
+            <Icon.pin className="h-3.5 w-3.5 shrink-0 text-ink-400" />
+            {c.location}
+          </div>
+        )}
       </div>
       <div className="mt-4 flex items-center gap-4 border-t border-ink-100 pt-3 dark:border-ink-800">
         <ExtLink href={c.url || undefined}><Icon.external className="h-3.5 w-3.5" /> Website</ExtLink>

@@ -140,7 +140,7 @@ export default function AuthorPage() {
       {candidates && !loading && (
         <div className="card animate-fade-up p-5">
           <div className="mb-1 flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">⚖</span>
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300"><Icon.people className="h-4 w-4" /></span>
             <div>
               <p className="text-sm font-bold">Multiple researchers match “{name}”</p>
               <p className="text-xs text-ink-400">Pick the right one — sorted by citations.</p>
@@ -197,7 +197,7 @@ export default function AuthorPage() {
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-bold">{data.name}</h1>
+                  <h1 className="font-display text-3xl font-semibold">{data.name}</h1>
                   {data.source && (
                     <span
                       className={`chip ${
@@ -267,7 +267,7 @@ export default function AuthorPage() {
           {recent.length > 1 && (
             <div className="card animate-fade-up p-5">
               <div className="mb-1 flex items-center gap-2">
-                <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">📈</span>
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300"><Icon.trend className="h-4 w-4" /></span>
                 <div>
                   <p className="text-sm font-bold">{data.counts_label || "Activity over time"}</p>
                   <p className="text-xs text-ink-400">From {data.source || "OpenAlex"}</p>

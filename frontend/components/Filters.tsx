@@ -224,7 +224,7 @@ export function Filters({
                           : "border-ink-200 bg-white text-ink-600 hover:border-ink-300 dark:border-ink-800 dark:bg-ink-900/40 dark:text-ink-400"
                       }`}
                     >
-                      {on ? "✓ " : "🏛 "}
+                      {on ? "✓ " : ""}
                       {pub}
                       <span className="text-ink-400">{cnt}</span>
                     </button>
@@ -330,7 +330,7 @@ export function Filters({
             <p className="label">Quick filters</p>
             <div className="flex flex-wrap gap-2">
               <Toggle
-                label="📄 Has PDF"
+                label="Has PDF"
                 on={filters.hasPdf}
                 onClick={() => set({ hasPdf: !filters.hasPdf })}
               />

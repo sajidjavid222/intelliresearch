@@ -103,6 +103,62 @@ export const Icon = {
       <path d="M18 6 6 18M6 6l12 12" />
     </svg>
   ),
+  share: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
+    </svg>
+  ),
+  network: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="6" r="2.2" /><circle cx="19" cy="6" r="2.2" /><circle cx="12" cy="18" r="2.2" />
+      <path d="M7 7.5 10.5 16M17 7.5 13.5 16M7.2 6h9.6" />
+    </svg>
+  ),
+  sparkles: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9zM5 16l.7 1.6L7.3 18.3l-1.6.7L5 20.6l-.7-1.6-1.6-.7 1.6-.7z" />
+    </svg>
+  ),
+  fileText: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M9 13h6M9 17h4" />
+    </svg>
+  ),
+  building: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18M5 21V5l7-3 7 3v16M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01" />
+    </svg>
+  ),
+  calendar: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  ),
+  coin: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><path d="M14.8 9.2A3.2 3.2 0 0 0 12 8c-1.8 0-3.2.9-3.2 2s1.4 2 3.2 2 3.2.9 3.2 2-1.4 2-3.2 2a3.2 3.2 0 0 1-2.8-1.2M12 6.5v11" />
+    </svg>
+  ),
+  pin: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" />
+    </svg>
+  ),
+  moon: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+    </svg>
+  ),
+  check: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  ),
+  arrowRight: (p: IconProps) => (
+    <svg viewBox="0 0 24 24" fill="none" className={p.className || base} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14m-7-7 7 7-7 7" />
+    </svg>
+  ),
 };
 
 /* ---------------- Skeleton card list ---------------- */

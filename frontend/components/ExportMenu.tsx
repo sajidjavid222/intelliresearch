@@ -19,18 +19,18 @@ export function ExportMenu({ query }: { query: string }) {
   // Grouped so users see this does BOTH citations AND AI-generated proposals.
   const groups = [
     {
-      heading: "📚 Citations",
+      heading: "Citations",
       items: [
-        { label: "BibTeX (.bib)", desc: "For LaTeX / Overleaf", href: `/api/export/bibtex?q=${q}`, icon: "❝" },
-        { label: "RIS (.ris)", desc: "Zotero · Mendeley · EndNote", href: `/api/export/ris?q=${q}`, icon: "🔖" },
+        { label: "BibTeX (.bib)", desc: "For LaTeX / Overleaf", href: `/api/export/bibtex?q=${q}`, icon: <Icon.review className="h-4 w-4" /> },
+        { label: "RIS (.ris)", desc: "Zotero · Mendeley · EndNote", href: `/api/export/ris?q=${q}`, icon: <Icon.star className="h-4 w-4" /> },
       ],
     },
     {
-      heading: "📝 AI-generated proposal",
+      heading: "AI-generated proposal",
       items: [
-        { label: "Proposal (PDF)", desc: "Ready-to-read research proposal", href: `/api/export/proposal?topic=${q}&fmt=pdf`, icon: "📄" },
-        { label: "Proposal (Word)", desc: "Editable .docx", href: `/api/export/proposal?topic=${q}&fmt=docx`, icon: "✏️" },
-        { label: "Proposal (Markdown)", desc: "Plain text", href: `/api/export/proposal?topic=${q}&fmt=md`, icon: "≡" },
+        { label: "Proposal (PDF)", desc: "Ready-to-read research proposal", href: `/api/export/proposal?topic=${q}&fmt=pdf`, icon: <Icon.fileText className="h-4 w-4" /> },
+        { label: "Proposal (Word)", desc: "Editable .docx", href: `/api/export/proposal?topic=${q}&fmt=docx`, icon: <Icon.fileText className="h-4 w-4" /> },
+        { label: "Proposal (Markdown)", desc: "Plain text", href: `/api/export/proposal?topic=${q}&fmt=md`, icon: <Icon.review className="h-4 w-4" /> },
       ],
     },
   ];
