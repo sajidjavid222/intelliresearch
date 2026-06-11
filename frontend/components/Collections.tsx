@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/Toast";
+import { usePaperDrawer } from "@/components/PaperDrawer";
 import { Icon } from "@/components/ui";
 
 interface Coll {
@@ -18,6 +19,7 @@ interface Item {
   title: string;
   collection_id?: string | null;
   notes?: string;
+  payload?: any;
 }
 
 const COLORS: Record<string, string> = {
@@ -44,10 +46,19 @@ function ItemRow({
   onSaved: () => void;
 }) {
   const toast = useToast();
+  const openDrawer = usePaperDrawer();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState(item.notes || "");
   const [saving, setSaving] = useState(false);
   const hasNote = (item.notes || "").trim().length > 0;
+
+  // Papers open the in-app detail drawer; everything else opens its link.
+  const url: string | undefined = item.payload?.url;
+  const clickable = (item.item_type === "paper" && item.payload) || !!url;
+  function openItem() {
+    if (item.item_type === "paper" && item.payload) openDrawer(item.payload);
+    else if (url) window.open(url, "_blank", "noopener");
+  }
 
   async function saveNote() {
     setSaving(true);
@@ -66,7 +77,17 @@ function ItemRow({
       <div className="flex items-center justify-between gap-3 p-3 text-sm">
         <div className="flex min-w-0 items-center gap-2">
           <span className="chip-muted shrink-0 text-[11px] capitalize">{item.item_type}</span>
-          <span className="truncate">{item.title}</span>
+          {clickable ? (
+            <button
+              onClick={openItem}
+              title={item.item_type === "paper" ? "Open details" : "Open link"}
+              className="truncate text-left font-medium text-ink-700 transition hover:text-brand-600 hover:underline dark:text-ink-200"
+            >
+              {item.title}
+            </button>
+          ) : (
+            <span className="truncate">{item.title}</span>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <button
