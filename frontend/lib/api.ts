@@ -11,7 +11,8 @@ function authHeaders(): Record<string, string> {
 
 export interface ApiError extends Error {
   status?: number;
-  coldStart?: boolean; // gateway error → backend likely waking up
+  coldStart?: boolean;   // gateway error → backend likely waking up
+  rateLimited?: boolean; // 429 → too many requests, back off and retry
 }
 
 async function req<T>(path: string, opts: RequestInit = {}): Promise<T> {
@@ -33,39 +34,50 @@ async function req<T>(path: string, opts: RequestInit = {}): Promise<T> {
   }
   if (!res.ok) {
     const raw = await res.text().catch(() => "");
-    // 502/503/504 from the gateway means the backend is down/booting.
+    // 502/503/504 = backend down/booting; 429 = rate-limited (slow down).
     const cold = res.status === 502 || res.status === 503 || res.status === 504;
+    const limited = res.status === 429;
     const err: ApiError = new Error(
-      cold ? "Server is waking up…" : raw.slice(0, 200) || `Request failed: ${res.status}`
+      cold ? "Server is waking up…"
+        : limited ? "Server is busy — too many requests."
+        : raw.slice(0, 200) || `Request failed: ${res.status}`
     );
     err.status = res.status;
     err.coldStart = cold;
+    err.rateLimited = limited;
     throw err;
   }
   const ct = res.headers.get("content-type") || "";
   return (ct.includes("application/json") ? res.json() : res.text()) as Promise<T>;
 }
 
-/** Retry a request through a cold start (gateway 502/503/504 or network error). */
+/**
+ * Retry a request through a transient failure:
+ *  - cold start (gateway 502/503/504 or network error) → backend waking up
+ *  - rate limit (429) → server busy, back off a bit longer
+ * `onWaking(reason)` lets the UI show an appropriate message.
+ */
 export async function withColdStartRetry<T>(
   fn: () => Promise<T>,
-  opts: { attempts?: number; delayMs?: number; onWaking?: () => void } = {}
+  opts: { attempts?: number; onWaking?: (reason: "waking" | "busy") => void } = {}
 ): Promise<T> {
-  const { attempts = 8, delayMs = 5000, onWaking } = opts;
+  const { attempts = 8, onWaking } = opts;
   for (let i = 0; i < attempts; i++) {
     try {
       return await fn();
     } catch (e) {
       const err = e as ApiError;
-      if (err.coldStart && i < attempts - 1) {
-        onWaking?.();
-        await new Promise((r) => setTimeout(r, delayMs));
+      const retry = err.coldStart || err.rateLimited;
+      if (retry && i < attempts - 1) {
+        onWaking?.(err.rateLimited ? "busy" : "waking");
+        // Rate limits get a longer, slightly increasing backoff.
+        const delay = err.rateLimited ? 7000 + i * 1500 : 5000;
+        await new Promise((r) => setTimeout(r, delay));
         continue;
       }
       throw e;
     }
   }
-  // unreachable, but satisfies the type checker
   return fn();
 }
 

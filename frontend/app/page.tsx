@@ -71,7 +71,7 @@ export default function Home() {
   const [tab, setTab] = useState<string>("papers");
   const [error, setError] = useState("");
   const [step, setStep] = useState(0);
-  const [wakingRetry, setWakingRetry] = useState(false);
+  const [wakingRetry, setWakingRetry] = useState<null | "waking" | "busy">(null);
   const [trends, setTrends] = useState<{ year: number; count: number }[]>([]);
   const [trending, setTrending] = useState<{ topic: string; tag: string; heat: number }[]>([]);
   const [filters, setFilters] = useState<PaperFilters>(EMPTY_FILTERS);
@@ -156,7 +156,7 @@ export default function Home() {
     setRes(null);
     setTrends([]);
     setStep(0);
-    setWakingRetry(false);
+    setWakingRetry(null);
     setFilters(EMPTY_FILTERS); // fresh filters per search
     const timer = setInterval(
       () => setStep((s) => Math.min(s + 1, AGENT_STEPS.length - 1)),
@@ -168,9 +168,9 @@ export default function Home() {
       // Auto-retry through a free-tier cold start instead of erroring out.
       const r = await withColdStartRetry(
         () => api.search(query, undefined, 15),
-        { onWaking: () => setWakingRetry(true) }
+        { onWaking: (reason) => setWakingRetry(reason) }
       );
-      setWakingRetry(false);
+      setWakingRetry(null);
       setRes(r);
       const first = TABS.find((t) => count(r, t.key) > 0);
       // Honor a shared ?tab= if it has content, else first non-empty tab.
@@ -189,7 +189,7 @@ export default function Home() {
     } finally {
       clearInterval(timer);
       setLoading(false);
-      setWakingRetry(false);
+      setWakingRetry(null);
     }
   }
 
@@ -316,9 +316,13 @@ export default function Home() {
             <div className="min-w-0">
               {wakingRetry ? (
                 <>
-                  <p className="font-semibold text-amber-900 dark:text-amber-200">Waking up the server…</p>
+                  <p className="font-semibold text-amber-900 dark:text-amber-200">
+                    {wakingRetry === "busy" ? "Server's busy — retrying…" : "Waking up the server…"}
+                  </p>
                   <p className="text-sm text-amber-700/80 dark:text-amber-300/80">
-                    It napped (free hosting). Holding your search — it'll run automatically in a few seconds.
+                    {wakingRetry === "busy"
+                      ? "A lot of requests just now. Easing off and holding your search — it'll run automatically."
+                      : "It napped (free hosting). Holding your search — it'll run automatically in a few seconds."}
                   </p>
                 </>
               ) : (
