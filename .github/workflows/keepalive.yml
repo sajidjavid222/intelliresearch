@@ -1,0 +1,35 @@
+# Keeps the Render free-tier backend awake during active hours so visitors
+# don't hit the ~30s cold start.
+#
+# Why only the backend: it's the slow one to boot (~20-30s). Pinging it
+# ~17h/day uses ~510 of Render's 750 free instance-hours/month, leaving
+# headroom for the frontend. Pinging both 24/7 would exceed the free quota
+# and get the services suspended.
+#
+# Schedule is UTC: 02:00–18:59 UTC ≈ 7:30am–12:30am IST (Indian day/evening).
+# Note: GitHub pauses scheduled workflows if the repo has no activity for
+# 60 days — a commit or a click on "Enable" in the Actions tab revives it.
+
+name: Keep backend awake
+
+on:
+  schedule:
+    - cron: "*/10 2-18 * * *"
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 \
+              "https://intelliresearch-backend.onrender.com/api/health" || echo 000)
+            echo "attempt $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 15
+          done
+          echo "backend did not respond, but not failing the job (best-effort)"
+          exit 0
