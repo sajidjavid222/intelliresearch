@@ -11,6 +11,7 @@ import { Icon } from "@/components/ui";
 
 const LINKS = [
   { href: "/", label: "Search" },
+  { href: "/feed", label: "For You" },
   { href: "/graph", label: "Graph" },
   { href: "/author", label: "Authors" },
   { href: "/dashboard", label: "Dashboard" },

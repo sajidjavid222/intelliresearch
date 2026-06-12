@@ -133,6 +133,23 @@ export interface User {
   github?: string;
 }
 
+export interface Deadline {
+  kind: "grant" | "conference";
+  title: string;
+  org?: string;
+  date: string | null; // ISO yyyy-mm-dd, or null for rolling/undated
+  raw?: string | null;
+  days_left: number | null;
+  url?: string;
+}
+
+export interface FeedResponse {
+  topics: string[];
+  papers: Paper[];
+  grants: Grant[];
+  deadlines: Deadline[];
+}
+
 export interface GraphNode {
   id: string;
   type: "paper" | "author";
