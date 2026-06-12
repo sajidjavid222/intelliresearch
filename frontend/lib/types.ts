@@ -200,6 +200,28 @@ export interface SavedItemRow {
   project_id: string | null;
 }
 
+export interface PdfSource {
+  n: number;
+  page: number;
+  snippet: string;
+}
+
+export interface PdfMeta {
+  doc_id: string;
+  title: string;
+  filename: string;
+  pages: number;
+  word_count: number;
+  references: string[];
+  preview: string;
+  extractable: boolean;
+}
+
+export interface PdfChatResponse {
+  answer: string;
+  sources: PdfSource[];
+}
+
 export interface GraphNode {
   id: string;
   type: "paper" | "author";

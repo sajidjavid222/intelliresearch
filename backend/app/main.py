@@ -11,6 +11,7 @@ from app.api.routes import (
     discover,
     export,
     monitoring,
+    pdf,
     projects,
     search,
 )
@@ -48,6 +49,7 @@ app.include_router(export.router, prefix="/api")
 app.include_router(monitoring.router, prefix="/api")
 app.include_router(discover.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
+app.include_router(pdf.router, prefix="/api")
 app.include_router(admin.router, prefix="/api")
 
 

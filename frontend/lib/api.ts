@@ -2,6 +2,8 @@ import type {
   FeedResponse,
   GraphLink,
   GraphNode,
+  PdfChatResponse,
+  PdfMeta,
   ProjectDetail,
   ProjectSummary,
   ProjectTask,
@@ -187,6 +189,29 @@ export const api = {
     req<{ translation: string; target: string }>("/api/discover/translate", {
       method: "POST",
       body: JSON.stringify({ text, target }),
+    }),
+
+  // Chat-with-PDF
+  uploadPdf: async (file: File): Promise<PdfMeta> => {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/pdf/upload", {
+      method: "POST",
+      body: fd,
+      headers: { ...authHeaders() }, // no Content-Type: browser sets the boundary
+    });
+    if (!res.ok) {
+      const raw = await res.text().catch(() => "");
+      const err: ApiError = new Error(raw.slice(0, 200) || `Upload failed: ${res.status}`);
+      err.status = res.status;
+      throw err;
+    }
+    return res.json();
+  },
+  pdfChat: (doc_id: string, question: string) =>
+    req<PdfChatResponse>("/api/pdf/chat", {
+      method: "POST",
+      body: JSON.stringify({ doc_id, question }),
     }),
 
   // Projects
