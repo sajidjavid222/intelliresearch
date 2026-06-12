@@ -5,7 +5,6 @@ All degrade gracefully to structured heuristic output without an LLM key.
 """
 from __future__ import annotations
 
-import json
 
 from app.schemas import (
     LiteratureReview,

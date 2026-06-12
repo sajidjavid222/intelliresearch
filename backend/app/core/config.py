@@ -83,6 +83,40 @@ class Settings(BaseSettings):
     # --- CORS ---
     FRONTEND_ORIGIN: str = "http://localhost:3000"
 
+    # --- Observability (optional) ---
+    SENTRY_DSN: Optional[str] = None
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.0
+
+    @property
+    def is_production(self) -> bool:
+        return self.ENVIRONMENT.strip().lower() in ("production", "prod")
+
+    def assert_production_ready(self) -> None:
+        """In production, refuse to boot with insecure defaults; warn on the rest.
+
+        Set ENVIRONMENT=production to engage these checks.
+        """
+        import logging
+
+        log = logging.getLogger("uvicorn.error")
+        if not self.is_production:
+            return
+
+        fatal: list[str] = []
+        if self.SECRET_KEY == "change-me-in-production":
+            fatal.append("SECRET_KEY is the insecure default — set a strong random value.")
+        if fatal:
+            raise RuntimeError(
+                "Refusing to start in production:\n  - " + "\n  - ".join(fatal)
+            )
+
+        if self.DEBUG:
+            log.warning("DEBUG is enabled in production — set DEBUG=false.")
+        if "sqlite" in self.DATABASE_URL:
+            log.warning("Using SQLite in production — set a Postgres DATABASE_URL.")
+        if not (self.OPENAI_API_KEY or self.ANTHROPIC_API_KEY or self.GEMINI_API_KEY):
+            log.warning("No LLM API key configured — AI features will use degraded fallbacks.")
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -24,6 +24,9 @@ reportlab>=4.2
 # Chat-with-PDF: extract text from uploaded PDFs (pure-Python, no system deps).
 pypdf>=4.0
 
+# Error monitoring (only active when SENTRY_DSN is set).
+sentry-sdk[fastapi]>=2.0
+
 # Optional extras (uncomment to enable):
 # anthropic>=0.40
 # openai>=1.57

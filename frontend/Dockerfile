@@ -7,6 +7,9 @@ COPY . .
 # present here. Render passes the service env var as a build arg (matching ARG).
 ARG BACKEND_URL
 ENV BACKEND_URL=$BACKEND_URL
+# NEXT_PUBLIC_* values are inlined into the client bundle at build time.
+ARG NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 RUN npm run build
 
 FROM node:20-alpine

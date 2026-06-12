@@ -19,9 +19,25 @@ from app.db.database import init_db
 from app.services.cache import get_cache
 from app.services.llm import get_llm
 
+# Initialize error monitoring as early as possible. No-op without a DSN, and a
+# missing sentry-sdk never breaks boot (it's an optional dependency).
+if settings.SENTRY_DSN:
+    try:
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            environment=settings.ENVIRONMENT,
+            traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+            send_default_pii=False,
+        )
+    except ImportError:
+        pass
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    settings.assert_production_ready()
     await init_db()
     yield
 

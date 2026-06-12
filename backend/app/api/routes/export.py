@@ -3,7 +3,7 @@ from fastapi import APIRouter, Query, Response
 from fastapi.responses import PlainTextResponse
 
 from app.agents import analysis, discovery
-from app.schemas import Paper, Proposal
+from app.schemas import Paper
 from app.services import export as export_svc
 
 router = APIRouter(prefix="/export", tags=["export"])

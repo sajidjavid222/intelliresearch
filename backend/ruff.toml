@@ -1,0 +1,6 @@
+line-length = 100
+
+[lint]
+# Syntax errors (E9) + pyflakes (F): catches real bugs like undefined names and
+# unused imports. Style-only rules are intentionally left off to keep CI signal high.
+select = ["E9", "F"]

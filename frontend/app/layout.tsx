@@ -8,6 +8,7 @@ import { PaperDrawerProvider } from "@/components/PaperDrawer";
 import { CompareProvider } from "@/components/Compare";
 import { ScrollTop } from "@/components/ScrollTop";
 import { ServerWaking } from "@/components/ServerWaking";
+import { SentryInit } from "@/components/SentryInit";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // Academic serif for display headings — the "research journal" feel.
@@ -78,6 +79,7 @@ export default function RootLayout({
           <div className="absolute -right-32 top-1/4 h-[30rem] w-[30rem] animate-aurora-slow rounded-full bg-accent-400/20 blur-3xl dark:bg-accent-500/15" />
           <div className="absolute -bottom-48 left-1/3 h-[36rem] w-[36rem] animate-aurora rounded-full bg-sky-300/20 blur-3xl dark:bg-sky-500/10" style={{ animationDelay: "-12s" }} />
         </div>
+        <SentryInit />
         <ToastProvider>
           <PaperDrawerProvider>
             <CompareProvider>

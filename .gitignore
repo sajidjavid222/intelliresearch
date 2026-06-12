@@ -11,6 +11,8 @@ backend/.venv/
 *.pyc
 *.db
 backend/researchpilot.db
+.pytest_cache/
+.ruff_cache/
 
 # --- Node / Next ---
 frontend/node_modules/
