@@ -2,6 +2,7 @@
 
 import { Icon } from "@/components/ui";
 import { TranslateButton } from "@/components/Translate";
+import { Markdown } from "@/components/Markdown";
 import type { LiteratureReview, ResearchGapResult } from "@/lib/types";
 
 function List({
@@ -50,9 +51,10 @@ export function ReviewPanel({ r }: { r: LiteratureReview }) {
       </div>
 
       <div>
-        <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink-700 dark:text-ink-200">
-          {r.summary}
-        </p>
+        <Markdown
+          text={r.summary}
+          className="text-[15px] leading-relaxed text-ink-700 dark:text-ink-200"
+        />
         {r.summary && <TranslateButton text={r.summary} className="mt-2" />}
       </div>
 

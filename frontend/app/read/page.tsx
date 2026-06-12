@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import type { PdfMeta, PdfSource } from "@/lib/types";
 import { useToast } from "@/components/Toast";
 import { Icon } from "@/components/ui";
+import { Markdown } from "@/components/Markdown";
 
 interface Msg {
   role: "user" | "assistant";
@@ -245,7 +246,11 @@ export default function ReadPage() {
                       : "bg-ink-50 text-ink-800 dark:bg-ink-900 dark:text-ink-100"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{m.text}</p>
+                  {m.role === "assistant" ? (
+                    <Markdown text={m.text} />
+                  ) : (
+                    <p className="whitespace-pre-wrap">{m.text}</p>
+                  )}
                   {m.sources && m.sources.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5 border-t border-ink-200/60 pt-2 dark:border-ink-700/60">
                       {m.sources.map((s) => (

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { api } from "@/lib/api";
 import type { Paper } from "@/lib/types";
 import { Icon } from "@/components/ui";
+import { Markdown } from "@/components/Markdown";
 
 interface Msg {
   role: "user" | "assistant";
@@ -101,7 +102,11 @@ export function ChatPanel({ topic, papers }: { topic: string; papers: Paper[] })
                   : "bg-ink-100 text-ink-800 dark:bg-ink-800 dark:text-ink-100"
               }`}
             >
-              <p className="whitespace-pre-line">{m.text}</p>
+              {m.role === "assistant" ? (
+                <Markdown text={m.text} />
+              ) : (
+                <p className="whitespace-pre-line">{m.text}</p>
+              )}
               {m.sources && m.sources.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5 border-t border-ink-200/40 pt-2 dark:border-ink-700">
                   {m.sources.map((s) => (
