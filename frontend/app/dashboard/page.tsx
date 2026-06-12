@@ -115,9 +115,8 @@ export default function Dashboard() {
       {/* Profile (full width) */}
       <ProfileEditor user={user} onSaved={setUser} />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left column */}
-        <div className="space-y-6 lg:col-span-2">
+      {/* Widgets — masonry packs cards by height so there's no dead space */}
+      <div className="columns-1 gap-5 lg:columns-2 [&>*]:mb-5 [&>*]:break-inside-avoid">
           {/* Alerts */}
           <section className="card p-5">
             <div className="mb-3 flex items-center justify-between">
@@ -200,10 +199,6 @@ export default function Dashboard() {
               })}
             </ul>
           </section>
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-6">
           {/* Saved searches */}
           {searches.length > 0 && (
             <section className="card p-5">
@@ -259,7 +254,6 @@ export default function Dashboard() {
               ))}
             </div>
           </section>
-        </div>
       </div>
     </div>
   );
