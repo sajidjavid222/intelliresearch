@@ -38,9 +38,6 @@ class User(Base):
     saved_items: Mapped[list["SavedItem"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
-    projects: Mapped[list["Project"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
     searches: Mapped[list["SavedSearch"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
@@ -81,54 +78,10 @@ class SavedItem(Base):
     collection_id: Mapped[str | None] = mapped_column(
         ForeignKey("collections.id"), nullable=True, index=True
     )
-    # Optional: file this item under a research Project workspace.
-    project_id: Mapped[str | None] = mapped_column(
-        ForeignKey("projects.id"), nullable=True, index=True
-    )
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user: Mapped[User] = relationship(back_populates="saved_items")
     collection: Mapped["Collection | None"] = relationship(back_populates="items")
-    project: Mapped["Project | None"] = relationship(back_populates="items")
-
-
-class Project(Base):
-    """A research project workspace: groups saved items, tasks, and notes."""
-
-    __tablename__ = "projects"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
-    name: Mapped[str] = mapped_column(String)
-    description: Mapped[str] = mapped_column(Text, default="")
-    color: Mapped[str] = mapped_column(String, default="brand")  # color theme key
-    notes: Mapped[str] = mapped_column(Text, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
-
-    user: Mapped[User] = relationship(back_populates="projects")
-    items: Mapped[list["SavedItem"]] = relationship(back_populates="project")
-    tasks: Mapped[list["ProjectTask"]] = relationship(
-        back_populates="project", cascade="all, delete-orphan"
-    )
-
-
-class ProjectTask(Base):
-    """A to-do item inside a project, optionally with a due date."""
-
-    __tablename__ = "project_tasks"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
-    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
-    title: Mapped[str] = mapped_column(String)
-    done: Mapped[bool] = mapped_column(Boolean, default=False)
-    due_date: Mapped[str | None] = mapped_column(String, nullable=True)  # ISO yyyy-mm-dd
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    project: Mapped[Project] = relationship(back_populates="tasks")
 
 
 class SavedSearch(Base):
