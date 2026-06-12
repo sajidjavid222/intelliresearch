@@ -148,7 +148,7 @@ async def list_items(
         {
             "id": r.id, "item_type": r.item_type, "title": r.title,
             "payload": r.payload, "collection_id": r.collection_id,
-            "notes": r.notes,
+            "project_id": r.project_id, "notes": r.notes,
         }
         for r in rows
     ]

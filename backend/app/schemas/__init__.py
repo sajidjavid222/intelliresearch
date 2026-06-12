@@ -207,6 +207,31 @@ class MoveItemRequest(BaseModel):
     collection_id: Optional[str] = None  # None => remove from any collection
 
 
+# ---------- Projects ----------
+class ProjectRequest(BaseModel):
+    name: str
+    description: str = ""
+    color: str = "brand"
+
+
+class ProjectUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TaskRequest(BaseModel):
+    title: str
+    due_date: Optional[str] = None  # ISO yyyy-mm-dd
+
+
+class TaskUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    done: Optional[bool] = None
+    due_date: Optional[str] = None
+
+
 class SubscriptionRequest(BaseModel):
     topic: str
     watch_papers: bool = True

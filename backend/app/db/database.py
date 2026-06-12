@@ -50,6 +50,7 @@ _MIGRATIONS: dict[str, dict[str, str]] = {
     "saved_items": {
         "collection_id": "VARCHAR",
         "notes": "TEXT DEFAULT ''",
+        "project_id": "VARCHAR",
     },
 }
 

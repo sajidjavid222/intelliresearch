@@ -1,4 +1,13 @@
-import type { FeedResponse, GraphLink, GraphNode, SearchResponse, User } from "./types";
+import type {
+  FeedResponse,
+  GraphLink,
+  GraphNode,
+  ProjectDetail,
+  ProjectSummary,
+  ProjectTask,
+  SearchResponse,
+  User,
+} from "./types";
 
 // Requests go to /api/* which Next rewrites to the FastAPI backend.
 const BASE = "";
@@ -179,6 +188,39 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ text, target }),
     }),
+
+  // Projects
+  listProjects: () => req<ProjectSummary[]>("/api/projects"),
+  createProject: (name: string, description = "", color = "brand") =>
+    req<{ id: string }>("/api/projects", {
+      method: "POST",
+      body: JSON.stringify({ name, description, color }),
+    }),
+  getProject: (id: string) => req<ProjectDetail>(`/api/projects/${id}`),
+  updateProject: (
+    id: string,
+    body: Partial<{ name: string; description: string; color: string; notes: string }>
+  ) => req(`/api/projects/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  deleteProject: (id: string) => req(`/api/projects/${id}`, { method: "DELETE" }),
+  addTask: (id: string, title: string, due_date?: string | null) =>
+    req<ProjectTask>(`/api/projects/${id}/tasks`, {
+      method: "POST",
+      body: JSON.stringify({ title, due_date: due_date || null }),
+    }),
+  updateTask: (
+    taskId: string,
+    body: Partial<{ title: string; done: boolean; due_date: string | null }>
+  ) =>
+    req<ProjectTask>(`/api/projects/tasks/${taskId}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  deleteTask: (taskId: string) =>
+    req(`/api/projects/tasks/${taskId}`, { method: "DELETE" }),
+  assignItem: (projectId: string, itemId: string) =>
+    req(`/api/projects/${projectId}/items/${itemId}`, { method: "POST" }),
+  unassignItem: (projectId: string, itemId: string) =>
+    req(`/api/projects/${projectId}/items/${itemId}`, { method: "DELETE" }),
 
   // Collections
   listCollections: () =>

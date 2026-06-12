@@ -150,6 +150,56 @@ export interface FeedResponse {
   deadlines: Deadline[];
 }
 
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  updated_at: string;
+  item_count: number;
+  task_count: number;
+  open_tasks: number;
+}
+
+export interface ProjectTask {
+  id: string;
+  title: string;
+  done: boolean;
+  due_date: string | null;
+  created_at: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  item_type: string;
+  title: string;
+  payload: any;
+  notes: string;
+  collection_id: string | null;
+}
+
+export interface ProjectDetail {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  tasks: ProjectTask[];
+  items: ProjectItem[];
+}
+
+export interface SavedItemRow {
+  id: string;
+  item_type: string;
+  title: string;
+  payload: any;
+  notes: string;
+  collection_id: string | null;
+  project_id: string | null;
+}
+
 export interface GraphNode {
   id: string;
   type: "paper" | "author";
