@@ -4,6 +4,7 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
 import { useToast } from "@/components/Toast";
+import { Icon } from "@/components/ui";
 
 const ROLES = [
   "Undergraduate", "Master's Student", "PhD Scholar", "Postdoc",
@@ -45,21 +46,14 @@ function TagInput({
           if ((e.key === "Enter" || e.key === ",") && draft.trim()) { e.preventDefault(); add(draft); }
           if (e.key === "Backspace" && !draft && tags.length) remove(tags[tags.length - 1]);
         }}
-        placeholder={tags.length ? "" : "Add interests — press Enter…"
-        }
+        placeholder={tags.length ? "" : "Add interests — press Enter…"}
         className="min-w-[120px] flex-1 bg-transparent py-0.5 text-sm outline-none placeholder:text-ink-400"
       />
     </div>
   );
 }
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
       <label className="label">{label}</label>
@@ -68,26 +62,118 @@ function Field({
   );
 }
 
-export function ProfileEditor({
+// Counts as "has a profile" once any detail beyond name is filled in.
+function hasDetails(u: User): boolean {
+  return Boolean(
+    u.role || u.institution || u.department || u.country || u.bio ||
+    (u.research_interests || "").trim() || u.orcid || u.google_scholar ||
+    u.website || u.github
+  );
+}
+
+function completeness(u: User): number {
+  const fields = [
+    u.name, u.role, u.institution, (u.research_interests || "").trim(), u.bio,
+    u.country, u.orcid || u.google_scholar || u.website || u.github,
+  ];
+  return Math.round((fields.filter((x) => x && String(x).trim()).length / fields.length) * 100);
+}
+
+/* ----------------------------- View (read-only) ----------------------------- */
+function ProfileView({ user, onEdit }: { user: User; onEdit: () => void }) {
+  const pct = completeness(user);
+  const interests = (user.research_interests || "")
+    .split(",").map((s) => s.trim()).filter(Boolean);
+  const subtitle = [user.role, user.institution].filter(Boolean).join(" · ");
+
+  const orcidUrl = user.orcid ? `https://orcid.org/${user.orcid}` : undefined;
+  const githubUrl = user.github
+    ? (user.github.startsWith("http") ? user.github : `https://github.com/${user.github.replace(/^@/, "")}`)
+    : undefined;
+  const links = [
+    { label: "Website", href: user.website || undefined },
+    { label: "Google Scholar", href: user.google_scholar || undefined },
+    { label: "GitHub", href: githubUrl },
+    { label: "ORCID", href: orcidUrl },
+  ].filter((l) => l.href);
+
+  return (
+    <section className="card p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-400 to-accent-500 text-lg font-bold text-white">
+            {(user.name || user.email)[0]?.toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <h2 className="font-display text-xl font-semibold leading-tight">
+              {user.name || "Your profile"}
+            </h2>
+            {subtitle && <p className="truncate text-sm text-ink-500">{subtitle}</p>}
+            {(user.department || user.country) && (
+              <p className="text-xs text-ink-400">
+                {[user.department, user.country].filter(Boolean).join(" · ")}
+              </p>
+            )}
+          </div>
+        </div>
+        <button onClick={onEdit} className="btn-ghost shrink-0">
+          <Icon.fileText className="h-4 w-4" /> Edit profile
+        </button>
+      </div>
+
+      {user.bio && (
+        <p className="mt-4 text-sm leading-relaxed text-ink-600 dark:text-ink-300">{user.bio}</p>
+      )}
+
+      {interests.length > 0 && (
+        <div className="mt-4">
+          <p className="label">Research interests</p>
+          <div className="flex flex-wrap gap-1.5">
+            {interests.map((t) => (
+              <span key={t} className="chip bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">{t}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {links.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {links.map((l) => (
+            <a key={l.label} href={l.href} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white/60 px-3 py-1.5 text-xs font-medium text-ink-600 transition hover:border-brand-300 hover:text-brand-600 dark:border-ink-800 dark:bg-ink-900/40 dark:text-ink-300">
+              <Icon.external className="h-3.5 w-3.5" /> {l.label}
+            </a>
+          ))}
+        </div>
+      )}
+
+      {pct < 100 && (
+        <div className="mt-5 flex items-center gap-3 border-t border-ink-100 pt-3 dark:border-ink-800">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+            <div className="h-full rounded-full bg-gradient-to-r from-brand-400 to-accent-500 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <span className="shrink-0 text-xs text-ink-400">{pct}% complete</span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ------------------------------- Edit (form) -------------------------------- */
+function ProfileForm({
   user,
   onSaved,
+  onCancel,
 }: {
   user: User;
   onSaved: (u: User) => void;
+  onCancel?: () => void;
 }) {
   const toast = useToast();
   const [f, setF] = useState<User>({ ...user });
   const [saving, setSaving] = useState(false);
-
   const set = (patch: Partial<User>) => setF((prev) => ({ ...prev, ...patch }));
-
-  // Profile completeness meter.
-  const fields = [
-    f.name, f.role, f.institution, f.research_interests, f.bio,
-    f.country, f.orcid || f.google_scholar || f.website || f.github,
-  ];
-  const filled = fields.filter((x) => x && String(x).trim()).length;
-  const pct = Math.round((filled / fields.length) * 100);
+  const pct = completeness(f);
 
   async function save() {
     setSaving(true);
@@ -112,14 +198,13 @@ export function ProfileEditor({
     <section className="card p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">Research profile</h2>
+          <h2 className="font-display text-xl font-semibold">Edit research profile</h2>
           <p className="text-xs text-ink-400">Improves grant & collaborator matching.</p>
         </div>
         <div className="text-right">
           <p className="text-xs font-semibold text-ink-500">{pct}% complete</p>
           <div className="mt-1 h-1.5 w-24 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
-            <div className="h-full rounded-full bg-gradient-to-r from-brand-400 to-accent-500 transition-all"
-              style={{ width: `${pct}%` }} />
+            <div className="h-full rounded-full bg-gradient-to-r from-brand-400 to-accent-500 transition-all" style={{ width: `${pct}%` }} />
           </div>
         </div>
       </div>
@@ -173,9 +258,40 @@ export function ProfileEditor({
         </Field>
       </div>
 
-      <button className="btn-primary mt-5 w-full sm:w-auto" onClick={save} disabled={saving}>
-        {saving ? "Saving…" : "Save profile"}
-      </button>
+      <div className="mt-5 flex gap-2">
+        <button className="btn-primary" onClick={save} disabled={saving}>
+          {saving ? "Saving…" : "Save profile"}
+        </button>
+        {onCancel && (
+          <button className="btn-ghost" onClick={onCancel} disabled={saving}>
+            Cancel
+          </button>
+        )}
+      </div>
     </section>
   );
+}
+
+/* --------------------------------- Wrapper ---------------------------------- */
+export function ProfileEditor({
+  user,
+  onSaved,
+}: {
+  user: User;
+  onSaved: (u: User) => void;
+}) {
+  // New/empty profiles open straight into the form; filled ones show the summary.
+  const [editing, setEditing] = useState(() => !hasDetails(user));
+
+  if (editing) {
+    return (
+      <ProfileForm
+        user={user}
+        onSaved={(u) => { onSaved(u); setEditing(false); }}
+        // Allow cancel only if there's an existing profile to fall back to.
+        onCancel={hasDetails(user) ? () => setEditing(false) : undefined}
+      />
+    );
+  }
+  return <ProfileView user={user} onEdit={() => setEditing(true)} />;
 }
