@@ -18,7 +18,9 @@ import { ExportMenu } from "@/components/ExportMenu";
 import { ProposalBanner } from "@/components/ProposalBanner";
 import { EmptyState, Icon, SkeletonCards } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { Counter, TrendChart } from "@/components/Charts";
+import { TrendChart } from "@/components/Charts";
+import { StatsCounter } from "@/components/StatsCounter";
+import { SourceMarquee } from "@/components/SourceMarquee";
 import {
   applyFilters,
   EMPTY_FILTERS,
@@ -296,6 +298,9 @@ export default function Home() {
               ))}
             </div>
           )}
+
+          {/* Trusted data-sources marquee (landing only) */}
+          {!res && <SourceMarquee />}
         </div>
       </section>
 
@@ -506,22 +511,8 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Stat strip */}
-            <div className="card grid grid-cols-2 gap-4 p-6 sm:grid-cols-4">
-              {[
-                { v: 200, s: "M+", l: "Papers indexed" },
-                { v: 12, s: "", l: "Live sources" },
-                { v: 10, s: "", l: "AI agents" },
-                { v: 500, s: "k+", l: "Datasets" },
-              ].map((x) => (
-                <div key={x.l} className="text-center">
-                  <p className="text-2xl font-extrabold text-gradient">
-                    <Counter value={x.v} suffix={x.s} />
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-400">{x.l}</p>
-                </div>
-              ))}
-            </div>
+            {/* Animated stats counter */}
+            <StatsCounter />
 
             {/* What you can discover — fills the column & shows the breadth */}
             <div className="card p-5">

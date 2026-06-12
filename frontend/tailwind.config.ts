@@ -80,6 +80,10 @@ const config: Config = {
           "0%": { transform: "translateX(-120%) skewX(-12deg)" },
           "100%": { transform: "translateX(220%) skewX(-12deg)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "fade-up": "fade-up .5s cubic-bezier(.2,.8,.2,1) both",
@@ -92,6 +96,7 @@ const config: Config = {
         "blob-slow": "blob 22s ease-in-out infinite reverse",
         aurora: "aurora 26s ease-in-out infinite",
         "aurora-slow": "aurora 38s ease-in-out infinite reverse",
+        marquee: "marquee 30s linear infinite",
       },
     },
   },
