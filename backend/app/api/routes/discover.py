@@ -15,7 +15,8 @@ from app.api.deps import get_optional_user
 from app.connectors import collaborators as collab_conn
 from app.connectors import papers as papers_conn
 from app.connectors import scholar as scholar_conn
-from app.connectors.http import get_json
+from app.connectors.http import TIMEOUT, get_json
+from app.core.config import settings
 from app.db.database import get_db
 from app.db.models import Alert, SavedItem, Subscription, User
 from app.services.cache import get_cache, make_key
@@ -102,6 +103,35 @@ async def recommendations(
             topic = last
     papers = await papers_conn.recommend_papers(topic, 8)
     return {"based_on": topic, "papers": papers}
+
+
+@router.get("/_diag/sources")
+async def diag_sources():
+    """TEMP diagnostic: raw upstream HTTP status as seen by THIS server, to tell
+    whether OpenAlex is throttling us (429/403) vs. working."""
+    import httpx
+
+    mailto = settings.OPENALEX_MAILTO
+    ua = f"IntelliResearch/1.0 (mailto:{mailto})"
+    tests = [
+        ("openalex_works", "https://api.openalex.org/works",
+         {"filter": "default.search:graph neural networks,publication_year:2023", "per-page": 1, "mailto": mailto}),
+        ("openalex_authors", "https://api.openalex.org/authors",
+         {"search": "sajid javid", "per-page": 1, "mailto": mailto}),
+        ("crossref", "https://api.crossref.org/works", {"query": "graph neural networks", "rows": 0}),
+    ]
+    out: dict = {"mailto": mailto}
+    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as c:
+        for label, url, params in tests:
+            try:
+                r = await c.get(url, params=params, headers={"User-Agent": ua})
+                ct = r.headers.get("content-type", "")
+                body = r.json() if ct.startswith("application/json") else None
+                count = (body.get("meta") or {}).get("count") if isinstance(body, dict) else None
+                out[label] = {"status": r.status_code, "count": count, "snippet": r.text[:160]}
+            except Exception as exc:
+                out[label] = {"error": repr(exc)}
+    return out
 
 
 @router.get("/trends")

@@ -8,6 +8,7 @@ public APIs from repeated hits and makes repeat searches near-instant.
 
 Pass `cache_ttl=0` to bypass the cache for a specific call.
 """
+import asyncio
 from typing import Any, Optional
 
 import httpx
@@ -50,16 +51,26 @@ async def get_json(
         if cached is not None:
             return cached
 
+    is_openalex = "api.openalex.org" in url
     h = {"User-Agent": USER_AGENT, "Accept": "application/json"}
+    if is_openalex and settings.OPENALEX_MAILTO:
+        # OpenAlex routes to the polite pool when the contact email is in the UA too.
+        h["User-Agent"] = f"IntelliResearch/1.0 (mailto:{settings.OPENALEX_MAILTO})"
     if headers:
         h.update(headers)
-    try:
-        async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as c:
-            r = await c.get(url, params=params, headers=h)
-            r.raise_for_status()
-            data = r.json()
-    except Exception:
-        return None
+    data = None
+    for attempt in range(2 if is_openalex else 1):
+        try:
+            async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as c:
+                r = await c.get(url, params=params, headers=h)
+                r.raise_for_status()
+                data = r.json()
+            break
+        except Exception:
+            if is_openalex and attempt == 0:
+                await asyncio.sleep(1.0)
+                continue
+            return None
 
     if ttl > 0 and data is not None:
         await cache.set(key, data, ttl)
