@@ -152,6 +152,8 @@ export const api = {
   me: () => req<User>("/api/auth/me"),
   updateProfile: (body: Partial<User>) =>
     req<User>("/api/auth/me", { method: "PATCH", body: JSON.stringify(body) }),
+  deleteAccount: () => req<{ ok: boolean }>("/api/auth/me", { method: "DELETE" }),
+  exportData: () => req<Record<string, any>>("/api/dashboard/export"),
 
   // Dashboard
   saveItem: (item_type: string, title: string, payload: any, collection_id?: string) =>

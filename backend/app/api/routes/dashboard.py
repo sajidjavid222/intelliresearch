@@ -209,6 +209,48 @@ async def delete_item(
     return {"ok": True}
 
 
+# ---------- Data export (GDPR portability) ----------
+@router.get("/export")
+async def export_data(
+    user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+):
+    """Return everything we hold for this user as a single JSON document."""
+    from datetime import datetime
+
+    async def rows(model):
+        return (
+            await db.execute(select(model).where(model.user_id == user.id))
+        ).scalars().all()
+
+    items = await rows(SavedItem)
+    searches = await rows(SavedSearch)
+    subs = await rows(Subscription)
+    collections = await rows(Collection)
+
+    return {
+        "exported_at": datetime.utcnow().isoformat() + "Z",
+        "profile": {
+            "email": user.email, "name": user.name, "role": user.role,
+            "institution": user.institution, "department": user.department,
+            "country": user.country, "bio": user.bio,
+            "research_interests": user.research_interests,
+            "orcid": user.orcid, "google_scholar": user.google_scholar,
+            "website": user.website, "github": user.github,
+            "created_at": user.created_at.isoformat() if user.created_at else None,
+        },
+        "saved_items": [
+            {"item_type": i.item_type, "title": i.title, "notes": i.notes,
+             "payload": i.payload} for i in items
+        ],
+        "saved_searches": [{"query": s.query, "agents": s.agents} for s in searches],
+        "subscriptions": [{"topic": s.topic} for s in subs],
+        "collections": [
+            {"name": c.name, "description": c.description, "color": c.color}
+            for c in collections
+        ],
+    }
+
+
 # ---------- Saved searches ----------
 @router.post("/searches")
 async def save_search(

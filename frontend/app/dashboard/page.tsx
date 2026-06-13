@@ -8,6 +8,7 @@ import { useToast } from "@/components/Toast";
 import { EmptyState, Icon } from "@/components/ui";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { Collections } from "@/components/Collections";
+import { AccountSettings } from "@/components/AccountSettings";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -255,6 +256,8 @@ export default function Dashboard() {
             </div>
           </section>
       </div>
+
+      <AccountSettings />
     </div>
   );
 }

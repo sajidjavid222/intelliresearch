@@ -71,6 +71,34 @@ async def update_profile(
     return UserOut.model_validate(user)
 
 
+@router.delete("/me")
+async def delete_account(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Permanently delete the account and ALL associated data (GDPR erasure).
+
+    Rows are removed children-first so foreign keys are satisfied on Postgres.
+    """
+    from sqlalchemy import delete as sql_delete
+
+    from app.db.models import (
+        Alert,
+        Collection,
+        ReadingHistory,
+        SavedItem,
+        SavedSearch,
+        Subscription,
+    )
+
+    uid = user.id
+    for model in (SavedItem, SavedSearch, Subscription, Alert, Collection, ReadingHistory):
+        await db.execute(sql_delete(model).where(model.user_id == uid))
+    await db.execute(sql_delete(User).where(User.id == uid))
+    await db.commit()
+    return {"ok": True}
+
+
 @router.get("/google/config")
 async def google_config():
     """Expose whether Google Sign-In is configured (frontend reads this)."""

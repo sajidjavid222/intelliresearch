@@ -107,6 +107,11 @@ export default function RootLayout({
                   IntelliResearch · Live data from arXiv, Semantic Scholar, OpenAlex,
                   Crossref, Hugging Face, GitHub, OpenML, Papers With Code & more.
                 </p>
+                <p className="mt-3 text-xs text-ink-400">
+                  <a href="/privacy" className="transition hover:text-brand-600">Privacy</a>
+                  <span className="mx-2">·</span>
+                  <a href="/terms" className="transition hover:text-brand-600">Terms</a>
+                </p>
               </footer>
             </CompareProvider>
           </PaperDrawerProvider>
