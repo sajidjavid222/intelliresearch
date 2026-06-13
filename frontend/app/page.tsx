@@ -212,10 +212,8 @@ export default function Home() {
       {/* ---------- Hero ---------- */}
       <section className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/60 p-8 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/50 sm:p-10">
         <div className="dot-grid pointer-events-none absolute inset-0" />
-        {/* Liquid-glass morphing blobs */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 animate-blob bg-gradient-to-br from-brand-300/40 to-brand-500/25 blur-2xl dark:from-brand-500/25 dark:to-brand-400/10" />
-        <div className="pointer-events-none absolute -bottom-28 left-6 h-64 w-64 animate-blob-slow bg-gradient-to-tr from-accent-300/35 to-accent-500/20 blur-2xl dark:from-accent-500/20 dark:to-accent-400/10" />
-        <div className="pointer-events-none absolute right-1/4 top-1/3 h-40 w-40 animate-blob bg-sky-300/25 blur-2xl dark:bg-sky-500/10" style={{ animationDelay: "-7s" }} />
+        {/* Slowly morphing mesh-gradient color field */}
+        <div className="mesh-gradient pointer-events-none absolute inset-0 opacity-90 dark:opacity-100" />
         {/* Interactive 3D knowledge-graph — all screens, faded so hero text stays crisp */}
         <div className="hero3d-mask pointer-events-none absolute inset-0 lg:left-auto lg:right-0 lg:w-3/5">
           <Hero3D />
@@ -462,7 +460,7 @@ export default function Home() {
             />
           )}
 
-          <div className="stagger grid gap-4">
+          <div className="grid gap-4">
             {tab === "papers" &&
               (() => {
                 const shown = applyFilters(res.papers, filters);
@@ -495,9 +493,9 @@ export default function Home() {
                       of {shown.length} papers
                     </p>
                     {pageItems.map((p, i) => (
-                      <div key={`${p.title}-${start + i}`} style={{ ["--i" as any]: i }}>
+                      <Reveal key={`${p.title}-${start + i}`} delay={Math.min(i, 6) * 50}>
                         <PaperCard p={p} />
-                      </div>
+                      </Reveal>
                     ))}
                     {pageCount > 1 && (
                       <div className="mt-3 flex items-center justify-center gap-2">
@@ -528,12 +526,12 @@ export default function Home() {
             )}
             {tab === "review" && res.literature_review && <ReviewPanel r={res.literature_review} />}
             {tab === "gaps" && res.research_gaps && <GapsPanel g={res.research_gaps} />}
-            {tab === "datasets" && res.datasets.map((d, i) => <div key={i} style={{ ["--i" as any]: i }}><DatasetCard d={d} /></div>)}
-            {tab === "code" && res.repositories.map((r, i) => <div key={i} style={{ ["--i" as any]: i }}><RepoCard r={r} /></div>)}
-            {tab === "grants" && res.grants.map((g, i) => <div key={i} style={{ ["--i" as any]: i }}><GrantCard g={g} /></div>)}
-            {tab === "conferences" && res.conferences.map((c, i) => <div key={i} style={{ ["--i" as any]: i }}><ConferenceCard c={c} /></div>)}
-            {tab === "patents" && res.patents.map((p, i) => <div key={i} style={{ ["--i" as any]: i }}><PatentCard p={p} /></div>)}
-            {tab === "collaborators" && res.collaborators.map((c, i) => <div key={i} style={{ ["--i" as any]: i }}><CollaboratorCard c={c} /></div>)}
+            {tab === "datasets" && res.datasets.map((d, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><DatasetCard d={d} /></Reveal>)}
+            {tab === "code" && res.repositories.map((r, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><RepoCard r={r} /></Reveal>)}
+            {tab === "grants" && res.grants.map((g, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><GrantCard g={g} /></Reveal>)}
+            {tab === "conferences" && res.conferences.map((c, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><ConferenceCard c={c} /></Reveal>)}
+            {tab === "patents" && res.patents.map((p, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><PatentCard p={p} /></Reveal>)}
+            {tab === "collaborators" && res.collaborators.map((c, i) => <Reveal key={i} delay={Math.min(i, 6) * 50}><CollaboratorCard c={c} /></Reveal>)}
             {tab !== "papers" && count(res, tab) === 0 && (
               <EmptyState title="Nothing in this category"
                 hint={`No ${tab} found for “${res.query}”. Try a broader or differently-worded query.`} />

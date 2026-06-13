@@ -77,6 +77,13 @@
   }
 }
 
+/* Slowly morphing mesh-gradient backdrop. */
+@keyframes mesh-shift {
+  0% { transform: scale(1.15) rotate(-4deg) translate(0, 0); }
+  50% { transform: scale(1.32) rotate(3deg) translate(2%, -2%); }
+  100% { transform: scale(1.18) rotate(6deg) translate(-2%, 1%); }
+}
+
 @layer components {
   /* Glassmorphism card: 14px backdrop blur, translucent layer (light mode kept
      at 75%+ for 4.5:1 text contrast), 1px light border + top light reflection. */
@@ -230,6 +237,23 @@
       -webkit-mask-image: linear-gradient(to right, transparent, #000 45%);
       mask-image: linear-gradient(to right, transparent, #000 45%);
     }
+  }
+  /* Morphing mesh-gradient color field (hero backdrop). */
+  .mesh-gradient {
+    background-image:
+      radial-gradient(at 26% 32%, rgba(52, 211, 161, 0.55) 0px, transparent 46%),
+      radial-gradient(at 78% 20%, rgba(139, 92, 246, 0.45) 0px, transparent 46%),
+      radial-gradient(at 64% 74%, rgba(56, 189, 248, 0.40) 0px, transparent 46%),
+      radial-gradient(at 20% 80%, rgba(19, 184, 134, 0.40) 0px, transparent 46%);
+    filter: blur(44px);
+    animation: mesh-shift 26s ease-in-out infinite alternate;
+  }
+  .dark .mesh-gradient {
+    background-image:
+      radial-gradient(at 26% 32%, rgba(52, 211, 161, 0.28) 0px, transparent 48%),
+      radial-gradient(at 78% 20%, rgba(139, 92, 246, 0.26) 0px, transparent 48%),
+      radial-gradient(at 64% 74%, rgba(56, 189, 248, 0.2) 0px, transparent 48%),
+      radial-gradient(at 20% 80%, rgba(19, 184, 134, 0.2) 0px, transparent 48%);
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal {
