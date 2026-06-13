@@ -17,6 +17,7 @@ from app.api.routes import (
 from app.core.config import settings
 from app.db.database import init_db
 from app.services.cache import get_cache
+from app.services.email import email_enabled
 from app.services.llm import get_llm
 
 # Initialize error monitoring as early as possible. No-op without a DSN, and a
@@ -89,6 +90,7 @@ async def health():
         "cache_enabled": settings.CACHE_ENABLED,
         "cache_backend": cache.backend,
         "cache_ttl_seconds": settings.CACHE_TTL_SECONDS,
+        "email_configured": email_enabled(),
     }
 
 
