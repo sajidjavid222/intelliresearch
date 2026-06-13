@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { GoogleButton } from "@/components/GoogleButton";
 import { useToast } from "@/components/Toast";
 import { Icon } from "@/components/ui";
+import { Tilt } from "@/components/Tilt";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,8 +56,9 @@ export default function LoginPage() {
   return (
     <div className="mx-auto mt-6 grid max-w-4xl gap-6 md:mt-12 md:grid-cols-2">
       {/* Left: value prop */}
+      <Tilt max={6} className="hidden md:block">
       <div
-        className="relative hidden animate-gradient-pan flex-col justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500 via-accent-500 to-brand-600 p-8 text-white shadow-lift md:flex"
+        className="relative flex h-full animate-gradient-pan flex-col justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-brand-500 via-accent-500 to-brand-600 p-8 text-white shadow-lift"
         style={{ backgroundSize: "220% 220%" }}
       >
         <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 animate-blob bg-white/10 blur-2xl" />
@@ -81,6 +83,7 @@ export default function LoginPage() {
           ))}
         </ul>
       </div>
+      </Tilt>
 
       {/* Right: form */}
       <div className="card p-7">

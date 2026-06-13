@@ -6,6 +6,7 @@ import type { PdfMeta, PdfSource } from "@/lib/types";
 import { useToast } from "@/components/Toast";
 import { Icon } from "@/components/ui";
 import { Markdown } from "@/components/Markdown";
+import { Reveal } from "@/components/Reveal";
 
 interface Msg {
   role: "user" | "assistant";
@@ -118,6 +119,7 @@ export default function ReadPage() {
   if (!pdfUrl) {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
+        <Reveal>
         <header className="text-center">
           <span className="chip mx-auto bg-accent-50 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300">
             <Icon.chat className="h-3.5 w-3.5" /> Chat with PDF
@@ -130,7 +132,9 @@ export default function ReadPage() {
             grounded in the document, with page citations.
           </p>
         </header>
+        </Reveal>
 
+        <Reveal delay={120}>
         <button
           onClick={() => fileInput.current?.click()}
           onDrop={onDrop}
@@ -153,6 +157,7 @@ export default function ReadPage() {
           </span>
           <span className="text-xs text-ink-400">Up to {MAX_MB} MB · stays private to your session</span>
         </button>
+        </Reveal>
 
         <input
           ref={fileInput}

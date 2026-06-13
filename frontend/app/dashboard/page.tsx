@@ -9,6 +9,7 @@ import { EmptyState, Icon } from "@/components/ui";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { Collections } from "@/components/Collections";
 import { AccountSettings } from "@/components/AccountSettings";
+import { Reveal } from "@/components/Reveal";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -169,6 +170,7 @@ export default function Dashboard() {
       <ProfileEditor user={user} onSaved={setUser} />
 
       {/* Widgets — masonry packs cards by height so there's no dead space */}
+      <Reveal>
       <div className="columns-1 gap-5 lg:columns-2 [&>*]:mb-5 [&>*]:break-inside-avoid">
           {/* Alerts */}
           <section className="card p-5">
@@ -308,8 +310,11 @@ export default function Dashboard() {
             </div>
           </section>
       </div>
+      </Reveal>
 
-      <AccountSettings />
+      <Reveal>
+        <AccountSettings />
+      </Reveal>
     </div>
   );
 }
