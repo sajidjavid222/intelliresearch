@@ -219,6 +219,18 @@
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     will-change: transform;
   }
+  /* Hero 3D fade so text stays readable: radial (top-right) on mobile, a
+     left-to-right fade on desktop where the scene sits on the right. */
+  .hero3d-mask {
+    -webkit-mask-image: radial-gradient(ellipse 80% 55% at 72% 26%, #000 28%, transparent 72%);
+    mask-image: radial-gradient(ellipse 80% 55% at 72% 26%, #000 28%, transparent 72%);
+  }
+  @media (min-width: 1024px) {
+    .hero3d-mask {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 45%);
+      mask-image: linear-gradient(to right, transparent, #000 45%);
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .reveal {
       opacity: 1;
