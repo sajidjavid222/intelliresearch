@@ -7,6 +7,10 @@ import { GoogleButton } from "@/components/GoogleButton";
 import { useToast } from "@/components/Toast";
 import { Icon } from "@/components/ui";
 import { Tilt } from "@/components/Tilt";
+import dynamic from "next/dynamic";
+
+// Faint 3D constellation behind the sign-in screen (client-only, lazy-loaded).
+const Hero3D = dynamic(() => import("@/components/Hero3D"), { ssr: false });
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,7 +58,17 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="mx-auto mt-6 grid max-w-4xl gap-6 md:mt-12 md:grid-cols-2">
+    <>
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 opacity-50"
+        style={{
+          maskImage: "radial-gradient(ellipse 60% 55% at 50% 42%, #000, transparent 72%)",
+          WebkitMaskImage: "radial-gradient(ellipse 60% 55% at 50% 42%, #000, transparent 72%)",
+        }}
+      >
+        <Hero3D />
+      </div>
+      <div className="mx-auto mt-6 grid max-w-4xl gap-6 md:mt-12 md:grid-cols-2">
       {/* Left: value prop */}
       <Tilt max={6} className="hidden md:block">
       <div
@@ -146,5 +160,6 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+    </>
   );
 }

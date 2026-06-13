@@ -23,6 +23,7 @@ import { TrendChart } from "@/components/Charts";
 import { StatsCounter } from "@/components/StatsCounter";
 import { SourceMarquee } from "@/components/SourceMarquee";
 import { Reveal } from "@/components/Reveal";
+import { Magnetic } from "@/components/Magnetic";
 import {
   applyFilters,
   EMPTY_FILTERS,
@@ -275,9 +276,11 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <button className="btn-primary !py-3.5 sm:w-36" onClick={() => run(q)} disabled={loading}>
-              {loading ? "Searching…" : "Search"}
-            </button>
+            <Magnetic strength={0.25} className="sm:w-36">
+              <button className="btn-primary w-full !py-3.5" onClick={() => run(q)} disabled={loading}>
+                {loading ? "Searching…" : "Search"}
+              </button>
+            </Magnetic>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -675,18 +678,22 @@ export default function Home() {
               cited review — from a single search.
             </p>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <button
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  setTimeout(() => (document.querySelector('input[aria-label="Search research"]') as HTMLInputElement)?.focus(), 450);
-                }}
-                className="btn cursor-pointer bg-white !px-6 !py-3 text-brand-700 shadow-lift transition-colors duration-200 hover:bg-brand-50"
-              >
-                Try a search <Icon.arrowRight className="h-4 w-4" />
-              </button>
-              <a href="/login" className="btn cursor-pointer border border-white/30 bg-white/10 !px-6 !py-3 text-white backdrop-blur transition-colors duration-200 hover:bg-white/20">
-                Create a free account
-              </a>
+              <Magnetic>
+                <button
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    setTimeout(() => (document.querySelector('input[aria-label="Search research"]') as HTMLInputElement)?.focus(), 450);
+                  }}
+                  className="btn cursor-pointer bg-white !px-6 !py-3 text-brand-700 shadow-lift transition-colors duration-200 hover:bg-brand-50"
+                >
+                  Try a search <Icon.arrowRight className="h-4 w-4" />
+                </button>
+              </Magnetic>
+              <Magnetic>
+                <a href="/login" className="btn cursor-pointer border border-white/30 bg-white/10 !px-6 !py-3 text-white backdrop-blur transition-colors duration-200 hover:bg-white/20">
+                  Create a free account
+                </a>
+              </Magnetic>
             </div>
           </div>
         </section>
