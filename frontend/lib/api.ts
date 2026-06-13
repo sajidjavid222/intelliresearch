@@ -1,5 +1,4 @@
 import type {
-  FeedResponse,
   GraphLink,
   GraphNode,
   PdfChatResponse,
@@ -121,7 +120,6 @@ export const api = {
   trending: () => req<{ topic: string; tag: string; heat: number }[]>("/api/discover/trending"),
   stats: () => req<any>("/api/discover/stats"),
   recommendations: () => req<any>("/api/discover/recommendations"),
-  feed: () => req<FeedResponse>("/api/discover/feed"),
   related: (q: string, limit = 6) =>
     req<import("./types").Paper[]>(
       `/api/discover/related?q=${encodeURIComponent(q)}&limit=${limit}`

@@ -136,7 +136,7 @@ export default function Dashboard() {
                 Add your interests
               </span>
               <p className="mt-1 text-xs text-ink-500">
-                Edit your profile below for tailored grants &amp; your “For You” feed.
+                Edit your profile below for tailored grant &amp; collaborator matching.
               </p>
             </div>
             <div className="rounded-xl border border-white/60 bg-white/60 p-3 dark:border-ink-800 dark:bg-ink-900/40">
