@@ -133,7 +133,7 @@ export default function AuthorPage() {
       )}
 
       {notFound && (
-        <EmptyState title="Author not found" hint={`No profile found for “${name}”. Try the full published name.`} />
+        <EmptyState title="Author not found" hint={`No researcher found for “${name}”. Try just the name — without the institution or extra words.`} />
       )}
 
       {/* Candidate picker — pick the exact person */}

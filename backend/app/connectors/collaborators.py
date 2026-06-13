@@ -4,6 +4,57 @@ from __future__ import annotations
 from app.connectors.http import get_json
 from app.schemas import Collaborator, Paper
 
+# Institution/stop words people often append to a name (e.g. "sajid javid iiitd").
+# OpenAlex searches author *names*, so these break the match and must be stripped.
+_STOP = {
+    "university", "univ", "institute", "institution", "college", "school",
+    "department", "dept", "of", "the", "lab", "laboratory", "center", "centre",
+    "iiit", "iiitd", "iit", "nit", "bits", "mit", "stanford", "harvard", "cmu",
+    "delhi", "mumbai", "bangalore", "bengaluru", "hyderabad", "kanpur", "madras",
+}
+
+
+def _name_variants(name: str) -> list[str]:
+    """Progressively simpler forms of a messy author query, best first:
+    the raw text, the text with institution/stop words removed, then trailing
+    words dropped (names usually come first, institution after)."""
+    name = (name or "").strip()
+    variants: list[str] = []
+    if name:
+        variants.append(name)
+        cleaned = " ".join(
+            w for w in name.split() if w.lower().strip(".,") not in _STOP
+        )
+        if cleaned and cleaned.lower() != name.lower():
+            variants.append(cleaned)
+        toks = name.split()
+        while len(toks) > 2:
+            toks = toks[:-1]
+            variants.append(" ".join(toks))
+        if len(name.split()) > 2:
+            variants.append(" ".join(name.split()[:2]))
+    seen, out = set(), []
+    for v in variants:
+        k = v.lower()
+        if v and k not in seen:
+            seen.add(k)
+            out.append(v)
+    return out
+
+
+async def _authors_search(name: str, limit: int) -> list[dict]:
+    """Search OpenAlex authors, progressively simplifying the query until we
+    get matches (so 'sajid javid iiitd' falls back to 'sajid javid')."""
+    for variant in _name_variants(name):
+        data = await get_json(
+            "https://api.openalex.org/authors",
+            params={"search": variant, "per-page": limit},
+        )
+        results = (data or {}).get("results") or []
+        if results:
+            return results
+    return []
+
 
 async def author_profile(
     name: str | None = None, author_id: str | None = None
@@ -19,11 +70,7 @@ async def author_profile(
         if not a or "id" not in a:
             return None
     else:
-        data = await get_json(
-            "https://api.openalex.org/authors",
-            params={"search": name, "per-page": 1},
-        )
-        results = (data or {}).get("results") or []
+        results = await _authors_search(name or "", 5)
         if not results:
             return None
         a = results[0]
@@ -87,12 +134,9 @@ async def author_profile(
 
 async def author_candidates(name: str, limit: int = 6) -> list[dict]:
     """Return several matching authors so the UI can disambiguate name clashes."""
-    data = await get_json(
-        "https://api.openalex.org/authors",
-        params={"search": name, "per-page": limit},
-    )
+    results = await _authors_search(name, limit)
     out = []
-    for a in (data or {}).get("results", []):
+    for a in results:
         stats = a.get("summary_stats") or {}
         insts = a.get("last_known_institutions") or a.get("affiliations") or []
         inst = None
