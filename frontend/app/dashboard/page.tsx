@@ -21,14 +21,21 @@ export default function Dashboard() {
   const [searches, setSearches] = useState<any[]>([]);
   const [newTopic, setNewTopic] = useState("");
   const [busy, setBusy] = useState(false);
+  const [tipDismissed, setTipDismissed] = useState(true);
 
   useEffect(() => {
     if (!localStorage.getItem("rp_token")) {
       router.push("/login");
       return;
     }
+    setTipDismissed(localStorage.getItem("rp_welcome_dismissed") === "1");
     refresh();
   }, []);
+
+  function dismissTip() {
+    localStorage.setItem("rp_welcome_dismissed", "1");
+    setTipDismissed(true);
+  }
 
   async function refresh() {
     try {
@@ -99,6 +106,51 @@ export default function Dashboard() {
           {busy ? "Checking…" : "Check for updates"}
         </button>
       </div>
+
+      {/* First-run welcome (new users only) */}
+      {!tipDismissed && items.length === 0 && subs.length === 0 && (
+        <div className="card relative overflow-hidden border-brand-200/70 bg-gradient-to-r from-brand-50/70 to-accent-50/60 p-5 dark:border-brand-500/20 dark:from-brand-500/10 dark:to-accent-500/10">
+          <button
+            onClick={dismissTip}
+            aria-label="Dismiss welcome"
+            className="absolute right-3 top-3 rounded-lg p-1 text-ink-400 transition hover:bg-black/5 hover:text-ink-600"
+          >
+            <Icon.close className="h-4 w-4" />
+          </button>
+          <h2 className="font-display text-xl font-semibold">Welcome to IntelliResearch 👋</h2>
+          <p className="mt-1 text-sm text-ink-500">Three quick steps to get the most out of it:</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <a
+              href="/"
+              className="rounded-xl border border-white/60 bg-white/60 p-3 transition hover:border-brand-300 dark:border-ink-800 dark:bg-ink-900/40"
+            >
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-500 text-xs text-white">1</span>{" "}
+                Run a search
+              </span>
+              <p className="mt-1 text-xs text-ink-500">Explore 200M+ papers across 12 sources.</p>
+            </a>
+            <div className="rounded-xl border border-white/60 bg-white/60 p-3 dark:border-ink-800 dark:bg-ink-900/40">
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-500 text-xs text-white">2</span>{" "}
+                Add your interests
+              </span>
+              <p className="mt-1 text-xs text-ink-500">
+                Edit your profile below for tailored grants &amp; your “For You” feed.
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/60 bg-white/60 p-3 dark:border-ink-800 dark:bg-ink-900/40">
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-500 text-xs text-white">3</span>{" "}
+                Monitor a topic
+              </span>
+              <p className="mt-1 text-xs text-ink-500">
+                Get alerts on new papers — add one under “Monitored topics”.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

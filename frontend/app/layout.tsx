@@ -9,6 +9,7 @@ import { CompareProvider } from "@/components/Compare";
 import { ScrollTop } from "@/components/ScrollTop";
 import { ServerWaking } from "@/components/ServerWaking";
 import { SentryInit } from "@/components/SentryInit";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // Academic serif for display headings — the "research journal" feel.
@@ -19,7 +20,7 @@ const crimson = Crimson_Pro({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "IntelliResearch — Autonomous Research Assistant",
     template: "%s · IntelliResearch",

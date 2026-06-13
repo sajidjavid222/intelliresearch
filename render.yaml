@@ -56,3 +56,5 @@ services:
         sync: false                    # set to the backend URL after deploy
       - key: NEXT_PUBLIC_SENTRY_DSN
         sync: false                    # optional: frontend Sentry DSN (baked at build)
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false                    # public URL, e.g. https://your-app.onrender.com (for OG/sitemap)
