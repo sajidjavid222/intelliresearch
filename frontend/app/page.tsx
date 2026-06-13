@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { api, withColdStartRetry } from "@/lib/api";
 import type { SearchResponse } from "@/lib/types";
 import {
@@ -35,6 +36,9 @@ import {
   removeRecentSearch,
   saveLastSearch,
 } from "@/lib/searchStore";
+
+// 3D hero background — WebGL can't SSR, so load it client-only and lazily.
+const Hero3D = dynamic(() => import("@/components/Hero3D"), { ssr: false });
 
 const EXAMPLES = [
   "Large language models for code generation",
@@ -211,6 +215,16 @@ export default function Home() {
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 animate-blob bg-gradient-to-br from-brand-300/40 to-brand-500/25 blur-2xl dark:from-brand-500/25 dark:to-brand-400/10" />
         <div className="pointer-events-none absolute -bottom-28 left-6 h-64 w-64 animate-blob-slow bg-gradient-to-tr from-accent-300/35 to-accent-500/20 blur-2xl dark:from-accent-500/20 dark:to-accent-400/10" />
         <div className="pointer-events-none absolute right-1/4 top-1/3 h-40 w-40 animate-blob bg-sky-300/25 blur-2xl dark:bg-sky-500/10" style={{ animationDelay: "-7s" }} />
+        {/* Interactive 3D constellation — desktop only, faded so hero text stays crisp */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-3/5 lg:block"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, black 45%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, black 45%)",
+          }}
+        >
+          <Hero3D />
+        </div>
         <div className="relative animate-fade-up">
           <span className="chip border border-brand-200/70 bg-white/70 text-brand-700 dark:border-brand-500/30 dark:bg-ink-900/60 dark:text-brand-300">
             ✦ 10 specialized AI agents · powered by Gemini
