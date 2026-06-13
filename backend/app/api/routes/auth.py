@@ -1,16 +1,23 @@
 """Auth routes: email/password register & login, plus Google Sign-In."""
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.connectors.http import get_json
 from app.core.config import settings
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import (
+    create_access_token,
+    create_reset_token,
+    decode_reset_token,
+    hash_password,
+    verify_password,
+)
 from app.db.database import get_db
 from app.db.models import User
 from app.schemas import Token, UserCreate, UserLogin, UserOut
+from app.services.email import email_enabled, render_email, send_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -97,6 +104,59 @@ async def delete_account(
     await db.execute(sql_delete(User).where(User.id == uid))
     await db.commit()
     return {"ok": True}
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str = Field(min_length=6)
+
+
+@router.post("/forgot-password")
+async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Email a password-reset link. Always responds the same way so the endpoint
+    can't be used to discover which emails have accounts."""
+    user = (
+        await db.execute(select(User).where(User.email == body.email.lower()))
+    ).scalar_one_or_none()
+    if user and email_enabled():
+        token = create_reset_token(user.id, (user.hashed_password or "")[:12])
+        link = f"{settings.FRONTEND_ORIGIN}/reset-password?token={token}"
+        await send_email(
+            user.email,
+            "Reset your IntelliResearch password",
+            render_email(
+                heading="Reset your password",
+                intro=(
+                    "We received a request to reset your password. This link expires in "
+                    "one hour. If you didn't request it, you can safely ignore this email."
+                ),
+                cta_text="Reset password",
+                cta_url=link,
+            ),
+        )
+    return {"ok": True}
+
+
+@router.post("/reset-password", response_model=Token)
+async def reset_password(body: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    decoded = decode_reset_token(body.token)
+    if not decoded:
+        raise HTTPException(400, "This reset link is invalid or has expired.")
+    user_id, fingerprint = decoded
+    user = (
+        await db.execute(select(User).where(User.id == user_id))
+    ).scalar_one_or_none()
+    # Fingerprint mismatch => the password already changed (token already used).
+    if not user or (user.hashed_password or "")[:12] != fingerprint:
+        raise HTTPException(400, "This reset link is invalid or has already been used.")
+    user.hashed_password = hash_password(body.password)
+    await db.commit()
+    await db.refresh(user)
+    return Token(access_token=create_access_token(user.id), user=UserOut.model_validate(user))
 
 
 @router.get("/google/config")

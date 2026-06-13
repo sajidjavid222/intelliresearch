@@ -33,6 +33,12 @@ services:
         value: "false"
       - key: SENTRY_DSN
         sync: false                    # optional: paste your Sentry DSN to enable
+      - key: RESEND_API_KEY
+        sync: false                    # optional: enables password-reset + digest emails
+      - key: EMAIL_FROM
+        sync: false                    # e.g. "IntelliResearch <noreply@yourdomain.com>"
+      - key: CRON_TOKEN
+        sync: false                    # shared secret for the digest cron (match the GH secret)
       - key: LLM_PROVIDER
         value: gemini
       - key: GEMINI_MODEL

@@ -43,3 +43,23 @@ def decode_token(token: str) -> Optional[str]:
         return payload.get("sub")
     except JWTError:
         return None
+
+
+def create_reset_token(user_id: str, pw_fingerprint: str) -> str:
+    """Short-lived password-reset token. The fingerprint (a slice of the current
+    password hash) binds the token to the current password, so it becomes invalid
+    once the password changes — i.e. effectively single-use."""
+    expire = datetime.utcnow() + timedelta(hours=1)
+    payload = {"sub": user_id, "type": "reset", "fp": pw_fingerprint, "exp": expire}
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_reset_token(token: str) -> Optional[tuple[str, str]]:
+    """Return (user_id, fingerprint) for a valid reset token, else None."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "reset":
+            return None
+        return payload.get("sub"), payload.get("fp", "")
+    except JWTError:
+        return None

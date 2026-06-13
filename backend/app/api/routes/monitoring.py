@@ -1,10 +1,13 @@
 """Monitoring trigger + knowledge-graph endpoint for citation visualization."""
-from fastapi import APIRouter, Depends
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException
 
 from app.agents import discovery
 from app.api.deps import get_current_user
+from app.core.config import settings
 from app.db.models import User
-from app.services.monitoring import run_all_subscriptions
+from app.services.monitoring import run_all_subscriptions, send_digests
 
 router = APIRouter(prefix="/monitoring", tags=["monitoring"])
 
@@ -13,6 +16,17 @@ router = APIRouter(prefix="/monitoring", tags=["monitoring"])
 async def trigger_monitoring(user: User = Depends(get_current_user)):
     """Manually trigger a monitoring pass (Celery beat does this on schedule)."""
     return await run_all_subscriptions()
+
+
+@router.post("/digest")
+async def run_digest(x_cron_token: Optional[str] = Header(default=None)):
+    """Scheduled job: refresh monitored topics, then email each user a digest of
+    new alerts. Guarded by a shared secret (CRON_TOKEN); called by a cron."""
+    if not settings.CRON_TOKEN or x_cron_token != settings.CRON_TOKEN:
+        raise HTTPException(403, "Forbidden")
+    monitoring = await run_all_subscriptions()
+    digest = await send_digests()
+    return {"monitoring": monitoring, "digest": digest}
 
 
 @router.get("/graph")

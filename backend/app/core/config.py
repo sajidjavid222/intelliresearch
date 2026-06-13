@@ -87,6 +87,12 @@ class Settings(BaseSettings):
     SENTRY_DSN: Optional[str] = None
     SENTRY_TRACES_SAMPLE_RATE: float = 0.0
 
+    # --- Email (optional; Resend). Features stay dormant until configured. ---
+    RESEND_API_KEY: Optional[str] = None
+    EMAIL_FROM: Optional[str] = None  # e.g. "IntelliResearch <noreply@yourdomain.com>"
+    # Shared secret guarding the scheduled /monitoring/digest endpoint.
+    CRON_TOKEN: Optional[str] = None
+
     @property
     def is_production(self) -> bool:
         return self.ENVIRONMENT.strip().lower() in ("production", "prod")

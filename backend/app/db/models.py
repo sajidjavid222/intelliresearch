@@ -124,6 +124,8 @@ class Alert(Base):
     message: Mapped[str] = mapped_column(Text, default="")
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
     read: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Whether this alert has been included in a digest email yet.
+    emailed: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user: Mapped[User] = relationship(back_populates="alerts")

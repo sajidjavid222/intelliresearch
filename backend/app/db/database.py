@@ -51,6 +51,10 @@ _MIGRATIONS: dict[str, dict[str, str]] = {
         "collection_id": "VARCHAR",
         "notes": "TEXT DEFAULT ''",
     },
+    "alerts": {
+        # FALSE works on both SQLite and Postgres.
+        "emailed": "BOOLEAN DEFAULT FALSE",
+    },
 }
 
 

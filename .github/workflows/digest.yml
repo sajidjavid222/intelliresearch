@@ -1,0 +1,34 @@
+# Daily research-digest emails: refreshes monitored topics and emails each user
+# their new alerts. Best-effort — no-ops unless the CRON_TOKEN secret is set
+# (and the backend has RESEND_API_KEY / EMAIL_FROM configured).
+#
+# Setup: add a repo secret CRON_TOKEN matching the backend's CRON_TOKEN env var.
+
+name: Send research digests
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # 13:00 UTC daily (~6:30pm IST)
+  workflow_dispatch: {}
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger digest endpoint
+        env:
+          CRON_TOKEN: ${{ secrets.CRON_TOKEN }}
+        run: |
+          if [ -z "$CRON_TOKEN" ]; then
+            echo "CRON_TOKEN secret not set — skipping digest."
+            exit 0
+          fi
+          code=$(curl -s -o /tmp/out.json -w "%{http_code}" --max-time 120 \
+            -X POST "https://intelliresearch-backend.onrender.com/api/monitoring/digest" \
+            -H "X-Cron-Token: $CRON_TOKEN" || echo 000)
+          echo "HTTP $code"
+          cat /tmp/out.json 2>/dev/null || true
+          echo
+          # Best-effort: don't fail the workflow on transient errors.
+          exit 0

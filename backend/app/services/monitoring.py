@@ -94,3 +94,68 @@ async def run_all_subscriptions() -> dict:
             except Exception:
                 continue
         return {"subscriptions_checked": len(subs), "alerts_created": total}
+
+
+def _digest_html(alerts: list[Alert]) -> str:
+    import html
+
+    from app.core.config import settings
+    from app.services.email import render_email
+
+    rows = []
+    for a in alerts[:20]:
+        rows.append(
+            '<div style="padding:12px 0;border-top:1px solid #eceff0;">'
+            f'<div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;'
+            f'color:#13b886;font-weight:bold;">{html.escape(a.kind.replace("_", " "))}</div>'
+            f'<div style="font-weight:bold;color:#0e1817;margin-top:2px;">{html.escape(a.title)}</div>'
+            f'<div style="color:#637270;font-size:13px;margin-top:2px;">{html.escape(a.message)}</div>'
+            "</div>"
+        )
+    return render_email(
+        heading="Your research updates",
+        intro="Here's what's new for the topics you monitor:",
+        cta_text="View in dashboard",
+        cta_url=f"{settings.FRONTEND_ORIGIN}/dashboard",
+        body_html="".join(rows),
+    )
+
+
+async def send_digests() -> dict:
+    """Email each user a digest of alerts not yet sent. Idempotent: alerts are
+    marked `emailed` once delivered, so re-running won't re-send them."""
+    from app.db.models import User
+    from app.services.email import email_enabled, send_email
+
+    if not email_enabled():
+        return {"sent": 0, "skipped": "email_not_configured"}
+
+    async with AsyncSessionLocal() as db:
+        pending = (
+            await db.execute(
+                select(Alert)
+                .where(Alert.emailed == False)  # noqa: E712
+                .order_by(Alert.user_id, Alert.created_at.desc())
+            )
+        ).scalars().all()
+
+        by_user: dict[str, list[Alert]] = {}
+        for a in pending:
+            by_user.setdefault(a.user_id, []).append(a)
+
+        sent = 0
+        for user_id, user_alerts in by_user.items():
+            user = await db.get(User, user_id)
+            if not user or not user.email:
+                continue
+            ok = await send_email(
+                user.email,
+                f"{len(user_alerts)} new research updates for you",
+                _digest_html(user_alerts),
+            )
+            if ok:
+                for a in user_alerts:
+                    a.emailed = True
+                sent += 1
+        await db.commit()
+        return {"sent": sent, "users_with_updates": len(by_user)}

@@ -87,3 +87,15 @@ def test_pdf_chat_unknown_doc_returns_404(client):
         "/api/pdf/chat", json={"doc_id": "does-not-exist", "question": "hi"}
     )
     assert r.status_code == 404
+
+
+def test_forgot_password_always_ok(client):
+    # Responds the same whether or not the email exists (no account enumeration).
+    r = client.post("/api/auth/forgot-password", json={"email": "nobody@example.com"})
+    assert r.status_code == 200
+    assert r.json()["ok"] is True
+
+
+def test_digest_requires_cron_token(client):
+    r = client.post("/api/monitoring/digest")
+    assert r.status_code == 403

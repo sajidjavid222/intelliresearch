@@ -142,6 +142,16 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
+  forgotPassword: (email: string) =>
+    req<{ ok: boolean }>("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, password: string) =>
+    req<{ access_token: string; user: User }>("/api/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    }),
   googleConfig: () =>
     req<{ enabled: boolean; client_id: string | null }>("/api/auth/google/config"),
   googleLogin: (credential: string) =>
