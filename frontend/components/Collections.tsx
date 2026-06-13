@@ -158,6 +158,10 @@ export function Collections() {
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState("brand");
+  const [visible, setVisible] = useState(15);
+
+  // Reset the visible window when the collection filter changes.
+  useEffect(() => setVisible(15), [active]);
 
   async function refresh() {
     const [c, it] = await Promise.all([api.listCollections(), api.listItems()]);
@@ -285,7 +289,7 @@ export function Collections() {
             {active ? "No items in this collection yet." : "Save items from search to build your library."}
           </p>
         )}
-        {shown.map((it) => (
+        {shown.slice(0, visible).map((it) => (
           <ItemRow
             key={it.id}
             item={it}
@@ -295,6 +299,14 @@ export function Collections() {
             onSaved={refresh}
           />
         ))}
+        {shown.length > visible && (
+          <button
+            onClick={() => setVisible((v) => v + 20)}
+            className="w-full rounded-lg border border-ink-200 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-300 hover:text-brand-600 dark:border-ink-800 dark:hover:text-brand-400"
+          >
+            Show {Math.min(20, shown.length - visible)} more
+          </button>
+        )}
       </div>
     </section>
   );

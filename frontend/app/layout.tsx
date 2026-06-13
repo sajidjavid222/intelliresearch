@@ -74,6 +74,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lift"
+        >
+          Skip to main content
+        </a>
         {/* Ambient aurora background — slow-drifting gradient orbs behind the glass UI. */}
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-40 left-[8%] h-[34rem] w-[34rem] animate-aurora rounded-full bg-brand-400/25 blur-3xl dark:bg-brand-500/15" />
@@ -88,7 +94,7 @@ export default function RootLayout({
               <ScrollTop />
               <ServerWaking />
               <Nav />
-              <main className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
+              <main id="main" tabIndex={-1} className="mx-auto max-w-7xl px-4 pb-16 pt-6 outline-none sm:px-6">
                 {children}
               </main>
               <footer className="mx-auto max-w-7xl px-6 py-12 text-center">
