@@ -63,6 +63,20 @@
   100% { transform: translateX(220%) skewX(-12deg); }
 }
 
+/* Gentle glassy entrance for route changes (applied by app/template.tsx). */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
 @layer components {
   /* Glassmorphism card: 14px backdrop blur, translucent layer (light mode kept
      at 75%+ for 4.5:1 text contrast), 1px light border + top light reflection. */
@@ -81,8 +95,17 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   }
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-glow
-      hover:border-brand-300/70 dark:hover:border-brand-400/40;
+    @apply transition-[transform,box-shadow,border-color] duration-300 ease-out;
+    will-change: transform;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    @apply border-brand-300/60 dark:border-brand-400/30;
+    /* Layered, soft elevation + a faint brand ring — premium, not flashy. */
+    box-shadow:
+      0 1px 2px rgba(7, 13, 12, 0.04),
+      0 16px 32px -12px rgba(7, 13, 12, 0.22),
+      0 0 0 1px rgba(19, 184, 134, 0.12);
   }
 
   .btn {
@@ -172,6 +195,43 @@
   .stagger > * {
     animation: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     animation-delay: calc(var(--i, 0) * 60ms);
+  }
+  /* Smooth scroll-reveal — toggled by the Reveal component when in view. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  /* Gentle glassy page transition (applied by app/template.tsx). */
+  .page-enter {
+    animation: page-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  /* 3D tilt base for showcase cards — the Tilt component sets the transform. */
+  .tilt-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .page-enter {
+      animation: none;
+    }
+    .tilt-3d {
+      transform: none !important;
+      transition: none;
+    }
   }
   /* Subtle dot-grid background for hero panels. */
   .dot-grid {

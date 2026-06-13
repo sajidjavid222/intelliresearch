@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui";
+import { Tilt } from "@/components/Tilt";
 
 interface Stat {
   value: number;
@@ -71,17 +72,16 @@ export function StatsCounter() {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="card relative overflow-hidden p-6"
-    >
-      {/* soft animated glow behind the numbers */}
-      <div className="pointer-events-none absolute -top-16 left-1/2 h-40 w-2/3 -translate-x-1/2 animate-aurora rounded-full bg-gradient-to-r from-brand-400/20 via-accent-400/20 to-brand-400/20 blur-3xl" />
-      <div className="relative grid grid-cols-2 gap-x-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-ink-100 dark:sm:divide-ink-800">
-        {STATS.map((s, i) => (
-          <StatCell key={s.label} stat={s} run={run} i={i} />
-        ))}
+    <Tilt max={4}>
+      <div ref={ref} className="card relative overflow-hidden p-6">
+        {/* soft animated glow behind the numbers */}
+        <div className="pointer-events-none absolute -top-16 left-1/2 h-40 w-2/3 -translate-x-1/2 animate-aurora rounded-full bg-gradient-to-r from-brand-400/20 via-accent-400/20 to-brand-400/20 blur-3xl" />
+        <div className="relative grid grid-cols-2 gap-x-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-ink-100 dark:sm:divide-ink-800">
+          {STATS.map((s, i) => (
+            <StatCell key={s.label} stat={s} run={run} i={i} />
+          ))}
+        </div>
       </div>
-    </div>
+    </Tilt>
   );
 }

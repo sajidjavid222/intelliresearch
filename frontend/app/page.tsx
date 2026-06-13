@@ -21,6 +21,7 @@ import { useToast } from "@/components/Toast";
 import { TrendChart } from "@/components/Charts";
 import { StatsCounter } from "@/components/StatsCounter";
 import { SourceMarquee } from "@/components/SourceMarquee";
+import { Reveal } from "@/components/Reveal";
 import {
   applyFilters,
   EMPTY_FILTERS,
@@ -551,7 +552,9 @@ export default function Home() {
             </div>
 
             {/* Animated stats counter */}
-            <StatsCounter />
+            <Reveal>
+              <StatsCounter />
+            </Reveal>
 
             {/* What you can discover — fills the column & shows the breadth */}
             <div className="card p-5">
@@ -647,6 +650,7 @@ export default function Home() {
 
       {/* ---------- Closing CTA (landing only) ---------- */}
       {!res && !loading && !error && (
+        <Reveal>
         <section
           className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-accent-600 to-brand-700 p-10 text-center text-white shadow-lift animate-gradient-pan sm:p-14"
           style={{ backgroundSize: "220% 220%" }}
@@ -678,6 +682,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </Reveal>
       )}
     </div>
   );
