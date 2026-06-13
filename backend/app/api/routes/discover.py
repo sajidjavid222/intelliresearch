@@ -119,7 +119,12 @@ async def publication_trends(q: str = Query(...)):
     async def count_for(y: int) -> dict:
         data = await get_json(
             "https://api.openalex.org/works",
-            params={"search": q, "filter": f"publication_year:{y}", "per-page": 1},
+            # OpenAlex rejects the top-level `search` param alongside `filter`;
+            # put the query inside the filter via default.search instead.
+            params={
+                "filter": f"default.search:{q},publication_year:{y}",
+                "per-page": 1,
+            },
         )
         total = ((data or {}).get("meta") or {}).get("count", 0)
         return {"year": y, "count": total}
