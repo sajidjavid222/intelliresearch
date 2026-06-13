@@ -78,8 +78,12 @@ export default function Home() {
   const [trending, setTrending] = useState<{ topic: string; tag: string; heat: number }[]>([]);
   const [filters, setFilters] = useState<PaperFilters>(EMPTY_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [papersPage, setPapersPage] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
   const [showRecent, setShowRecent] = useState(false);
+
+  // Reset paper pagination when the results, filters, or tab change.
+  useEffect(() => setPapersPage(0), [res, filters, tab]);
 
   // Load trending + recent on mount; run ?q= or restore the last search.
   useEffect(() => {
@@ -409,7 +413,7 @@ export default function Home() {
           {res.papers.length > 0 && <ProposalBanner topic={res.query} />}
 
           {/* Sticky tabs */}
-          <div role="tablist" aria-label="Result categories" className="sticky top-[76px] z-20 -mx-1 overflow-x-auto rounded-xl border border-ink-200/60 bg-white/80 px-1 py-1.5 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/70">
+          <div id="results-top" role="tablist" aria-label="Result categories" className="sticky top-[76px] z-20 -mx-1 overflow-x-auto rounded-xl border border-ink-200/60 bg-white/80 px-1 py-1.5 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/70">
             <div className="flex gap-1">
               {TABS.map((t) => {
                 const n = count(res, t.key);
@@ -458,17 +462,52 @@ export default function Home() {
                     />
                   );
                 }
+                const PAGE_SIZE = 15;
+                const pageCount = Math.ceil(shown.length / PAGE_SIZE);
+                const page = Math.min(papersPage, pageCount - 1);
+                const start = page * PAGE_SIZE;
+                const pageItems = shown.slice(start, start + PAGE_SIZE);
+                const goPage = (p: number) => {
+                  setPapersPage(p);
+                  document
+                    .getElementById("results-top")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                };
                 return (
                   <>
                     <p className="-mb-1 text-xs text-ink-400">
-                      Showing <b className="text-ink-600 dark:text-ink-300">{shown.length}</b> of{" "}
-                      {res.papers.length} papers
+                      Showing{" "}
+                      <b className="text-ink-600 dark:text-ink-300">
+                        {start + 1}–{start + pageItems.length}
+                      </b>{" "}
+                      of {shown.length} papers
                     </p>
-                    {shown.map((p, i) => (
-                      <div key={`${p.title}-${i}`} style={{ ["--i" as any]: i }}>
+                    {pageItems.map((p, i) => (
+                      <div key={`${p.title}-${start + i}`} style={{ ["--i" as any]: i }}>
                         <PaperCard p={p} />
                       </div>
                     ))}
+                    {pageCount > 1 && (
+                      <div className="mt-3 flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => goPage(page - 1)}
+                          disabled={page === 0}
+                          className="btn-ghost disabled:opacity-40"
+                        >
+                          ← Prev
+                        </button>
+                        <span className="px-2 text-sm font-medium text-ink-500">
+                          Page {page + 1} of {pageCount}
+                        </span>
+                        <button
+                          onClick={() => goPage(page + 1)}
+                          disabled={page >= pageCount - 1}
+                          className="btn-ghost disabled:opacity-40"
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    )}
                   </>
                 );
               })()}

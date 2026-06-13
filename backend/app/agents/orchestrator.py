@@ -26,6 +26,10 @@ ALL_AGENTS = [
     "research_gaps",
 ]
 
+# Papers are the backbone, so we pull a deep pool (deduped across ~8 sources)
+# and let the frontend paginate through it. Other categories stay at req.limit.
+PAPERS_POOL = 45
+
 # Keyword cues for cheap, no-LLM intent routing.
 _CUES = {
     "datasets": ["dataset", "data set", "benchmark", "corpus", "training data"],
@@ -109,7 +113,7 @@ async def run_search(req: SearchRequest, profile: str = "") -> SearchResponse:
     tasks: dict[str, asyncio.Task] = {}
     if "papers" in selected:
         tasks["papers"] = asyncio.create_task(
-            discovery.paper_discovery_agent(topic, req.limit)
+            discovery.paper_discovery_agent(topic, max(req.limit, PAPERS_POOL))
         )
     if "datasets" in selected:
         tasks["datasets"] = asyncio.create_task(

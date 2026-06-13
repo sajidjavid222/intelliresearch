@@ -15,7 +15,7 @@ from app.schemas import (
 from app.services.llm import get_llm
 
 
-def _papers_context(papers: list[Paper], n: int = 12) -> str:
+def _papers_context(papers: list[Paper], n: int = 18) -> str:
     lines = []
     for i, p in enumerate(papers[:n], 1):
         lines.append(
