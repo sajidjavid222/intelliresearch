@@ -37,6 +37,10 @@ async def get_json(
     cache_ttl: int = _DEFAULT,
 ) -> Any:
     ttl = _ttl(cache_ttl)
+    # OpenAlex throttles the anonymous "common pool" hard from shared cloud IPs.
+    # Passing a contact email moves us to the faster, reliable "polite pool".
+    if "api.openalex.org" in url and settings.OPENALEX_MAILTO:
+        params = {**(params or {}), "mailto": settings.OPENALEX_MAILTO}
     # Headers may carry API keys; include only their names in the cache key.
     key = make_key("get_json", url, params or {}, sorted((headers or {}).keys()))
     cache = get_cache()

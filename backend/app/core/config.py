@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     SEMANTIC_SCHOLAR_API_KEY: Optional[str] = None
     GITHUB_TOKEN: Optional[str] = None
     HUGGINGFACE_TOKEN: Optional[str] = None
+    # A contact email puts OpenAlex requests in the faster, reliable "polite
+    # pool" — essential from shared cloud IPs (Render). Override via env.
+    OPENALEX_MAILTO: str = "sajidj@iiitd.ac.in"
 
     # --- Google Scholar (via `scholarly`; best-effort, often blocked) ---
     SCHOLAR_ENABLED: bool = True
