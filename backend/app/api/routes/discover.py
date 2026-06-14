@@ -15,8 +15,7 @@ from app.api.deps import get_optional_user
 from app.connectors import collaborators as collab_conn
 from app.connectors import papers as papers_conn
 from app.connectors import scholar as scholar_conn
-from app.connectors.http import TIMEOUT, get_json
-from app.core.config import settings
+from app.connectors.http import get_json
 from app.db.database import get_db
 from app.db.models import Alert, SavedItem, Subscription, User
 from app.services.cache import get_cache, make_key
@@ -105,62 +104,28 @@ async def recommendations(
     return {"based_on": topic, "papers": papers}
 
 
-@router.get("/_diag/sources")
-async def diag_sources():
-    """TEMP diagnostic: raw upstream HTTP status as seen by THIS server, to tell
-    whether OpenAlex is throttling us (429/403) vs. working."""
-    import httpx
-
-    mailto = settings.OPENALEX_MAILTO
-    ua = f"IntelliResearch/1.0 (mailto:{mailto})"
-    tests = [
-        ("openalex_works", "https://api.openalex.org/works",
-         {"filter": "default.search:graph neural networks,publication_year:2023", "per-page": 1, "mailto": mailto}),
-        ("openalex_authors", "https://api.openalex.org/authors",
-         {"search": "sajid javid", "per-page": 1, "mailto": mailto}),
-        ("crossref", "https://api.crossref.org/works", {"query": "graph neural networks", "rows": 0}),
-    ]
-    out: dict = {"mailto": mailto}
-    async with httpx.AsyncClient(timeout=TIMEOUT, follow_redirects=True) as c:
-        for label, url, params in tests:
-            try:
-                r = await c.get(url, params=params, headers={"User-Agent": ua})
-                ct = r.headers.get("content-type", "")
-                body = r.json() if ct.startswith("application/json") else None
-                count = (body.get("meta") or {}).get("count") if isinstance(body, dict) else None
-                out[label] = {"status": r.status_code, "count": count, "snippet": r.text[:160]}
-            except Exception as exc:
-                out[label] = {"error": repr(exc)}
-    return out
-
-
 @router.get("/trends")
 async def publication_trends(q: str = Query(...)):
     """Yearly publication counts for a topic (for the trend chart).
 
-    Queries all years concurrently so the whole call returns in ~1 request time.
+    Uses Crossref's year facet — one request returns counts for every year.
+    (OpenAlex now meters anonymous requests with a tiny daily budget that a
+    shared server IP exhausts almost immediately; Crossref has no such cap.)
     """
-    import asyncio
     import datetime
 
     this_year = datetime.date.today().year
     years = list(range(this_year - 7, this_year + 1))
 
-    async def count_for(y: int) -> dict:
-        data = await get_json(
-            "https://api.openalex.org/works",
-            # OpenAlex rejects the top-level `search` param alongside `filter`;
-            # put the query inside the filter via default.search instead.
-            params={
-                "filter": f"default.search:{q},publication_year:{y}",
-                "per-page": 1,
-            },
-        )
-        total = ((data or {}).get("meta") or {}).get("count", 0)
-        return {"year": y, "count": total}
-
-    counts = await asyncio.gather(*[count_for(y) for y in years])
-    return {"topic": q, "series": list(counts)}
+    data = await get_json(
+        "https://api.crossref.org/works",
+        params={"query": q, "rows": 0, "facet": "published:40"},
+    )
+    facets = (((data or {}).get("message") or {}).get("facets") or {})
+    values = (facets.get("published") or {}).get("values") or {}
+    counts = {int(y): c for y, c in values.items() if str(y).isdigit()}
+    series = [{"year": y, "count": counts.get(y, 0)} for y in years]
+    return {"topic": q, "series": series}
 
 
 @router.get("/related")

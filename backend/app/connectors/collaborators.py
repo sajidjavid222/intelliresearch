@@ -56,6 +56,106 @@ async def _authors_search(name: str, limit: int) -> list[dict]:
     return []
 
 
+# ---- Crossref fallback (OpenAlex now budget-throttles shared cloud IPs) ----
+def _author_matches(full: str, qtoks: list[str]) -> bool:
+    low = full.lower()
+    return bool(full) and all(t in low for t in qtoks)
+
+
+def _crossref_orcid(a: dict) -> str | None:
+    return ((a.get("ORCID") or "").rsplit("/", 1)[-1]) or None
+
+
+async def _crossref_candidates(name: str, limit: int) -> list[dict]:
+    """Disambiguation candidates from Crossref when OpenAlex is unavailable."""
+    from collections import Counter
+
+    data = await get_json(
+        "https://api.crossref.org/works",
+        params={"query.author": name, "rows": 60, "select": "author"},
+    )
+    items = ((data or {}).get("message") or {}).get("items") or []
+    qtoks = [t for t in name.lower().split() if len(t) > 1]
+    counts: Counter = Counter()
+    info: dict[str, dict] = {}
+    for it in items:
+        for a in it.get("author") or []:
+            full = f"{a.get('given', '')} {a.get('family', '')}".strip()
+            if not _author_matches(full, qtoks):
+                continue
+            low = full.lower()
+            counts[low] += 1
+            if low not in info:
+                affs = a.get("affiliation") or []
+                info[low] = {
+                    "name": full,
+                    "orcid": _crossref_orcid(a),
+                    "affiliation": affs[0].get("name") if affs else None,
+                }
+    out = []
+    for low, c in counts.most_common(limit):
+        d = info[low]
+        out.append({
+            "id": "crossref:" + d["name"], "name": d["name"],
+            "affiliation": d["affiliation"], "works_count": c,
+            "cited_by_count": None, "h_index": None,
+            "orcid": d["orcid"], "topics": [],
+        })
+    return out
+
+
+async def _crossref_profile(name: str) -> dict | None:
+    """Author profile + top works from Crossref (no h-index/citation metrics)."""
+    # Don't sort by citations server-side — the fuzzy author query would surface
+    # famous *other* same-surname authors. Scan a wide page, keep only works that
+    # actually list this author, then rank those by citations ourselves.
+    data = await get_json(
+        "https://api.crossref.org/works",
+        params={
+            "query.author": name, "rows": 80,
+            "select": "title,issued,container-title,is-referenced-by-count,DOI,author,URL",
+        },
+    )
+    items = ((data or {}).get("message") or {}).get("items") or []
+    qtoks = [t for t in name.lower().split() if len(t) > 1]
+    papers: list[Paper] = []
+    affiliation = None
+    for it in items:
+        authors = [
+            f"{a.get('given', '')} {a.get('family', '')}".strip()
+            for a in (it.get("author") or [])
+        ]
+        if not any(_author_matches(au, qtoks) for au in authors):
+            continue
+        if affiliation is None:
+            for a in it.get("author") or []:
+                full = f"{a.get('given', '')} {a.get('family', '')}".strip()
+                if _author_matches(full, qtoks) and a.get("affiliation"):
+                    affiliation = a["affiliation"][0].get("name")
+                    break
+        issued = (it.get("issued") or {}).get("date-parts") or [[None]]
+        year = issued[0][0] if issued and issued[0] else None
+        ct = it.get("container-title") or []
+        papers.append(Paper(
+            title=(it.get("title") or [""])[0] or "",
+            authors=authors[:6], venue=ct[0] if ct else None, year=year,
+            citation_count=it.get("is-referenced-by-count"),
+            doi=it.get("DOI"), url=it.get("URL"), source="Crossref",
+        ))
+    papers.sort(key=lambda p: p.citation_count or 0, reverse=True)
+    papers = papers[:14]
+    if not papers:
+        return None
+    return {
+        "name": name.title(), "openalex_id": None, "orcid": None,
+        "affiliation": affiliation, "works_count": len(papers),
+        "cited_by_count": None, "h_index": None, "i10_index": None,
+        "two_year_mean_citedness": 0, "topics": [],
+        "counts_by_year": [], "counts_label": "Publications per year",
+        "papers": [p.model_dump() for p in papers], "source": "Crossref",
+    }
+
+
 async def author_profile(
     name: str | None = None, author_id: str | None = None
 ) -> dict | None:
@@ -65,6 +165,9 @@ async def author_profile(
     EXACT author — used by the candidate picker to avoid name-collision errors.
     Otherwise searches by `name` and takes the best match.
     """
+    # Crossref-sourced candidate the user picked from the picker.
+    if author_id and author_id.startswith("crossref:"):
+        return await _crossref_profile(author_id[len("crossref:"):])
     if author_id:
         a = await get_json(f"https://api.openalex.org/authors/{author_id}")
         if not a or "id" not in a:
@@ -72,7 +175,8 @@ async def author_profile(
     else:
         results = await _authors_search(name or "", 5)
         if not results:
-            return None
+            # OpenAlex throttled / no match — fall back to Crossref.
+            return await _crossref_profile(name or "")
         a = results[0]
     stats = a.get("summary_stats") or {}
     insts = a.get("last_known_institutions") or a.get("affiliations") or []
@@ -135,6 +239,9 @@ async def author_profile(
 async def author_candidates(name: str, limit: int = 6) -> list[dict]:
     """Return several matching authors so the UI can disambiguate name clashes."""
     results = await _authors_search(name, limit)
+    if not results:
+        # OpenAlex throttled (daily budget) — disambiguate via Crossref instead.
+        return await _crossref_candidates(name, limit)
     out = []
     for a in results:
         stats = a.get("summary_stats") or {}
