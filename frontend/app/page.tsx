@@ -554,9 +554,11 @@ export default function Home() {
       {/* ---------- Landing (no results yet) ---------- */}
       {!res && !loading && !error && (
         <>
-          {/* 3D agent orbit centerpiece — glassmorphic */}
-          <Reveal>
-            <section className="card relative overflow-hidden p-6 text-center sm:p-8">
+          {/* Bento grid — landing showcase */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6 lg:grid-flow-dense">
+          {/* Hero: 3D agent orbit centerpiece */}
+          <Reveal className="sm:col-span-2 lg:col-span-4 lg:row-span-2">
+            <section className="card relative flex h-full flex-col overflow-hidden p-6 text-center sm:p-8">
               <div className="dot-grid pointer-events-none absolute inset-0 opacity-50" />
               <div className="pointer-events-none absolute left-1/2 top-2 h-72 w-3/4 -translate-x-1/2 animate-aurora rounded-full bg-gradient-to-r from-brand-400/25 via-accent-400/25 to-sky-400/20 blur-3xl" />
               <div className="relative">
@@ -577,9 +579,8 @@ export default function Home() {
             </section>
           </Reveal>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-4 lg:col-span-2">
-            <div className="stagger grid gap-3 sm:grid-cols-3">
+          <div className="contents">
+            <div className="stagger contents">
               {[
                 { icon: <Icon.paper className="h-5 w-5" />, t: "Discover & rank", d: "arXiv, Semantic Scholar, OpenAlex, PubMed & more — with seminal-paper detection.", b: "e.g. “graph neural networks” → dozens of ranked papers, with seminal works flagged." },
                 { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word).", b: "Ask a question → a cited answer, then a full literature review and a proposal draft." },
@@ -587,7 +588,7 @@ export default function Home() {
               ].map((c, i) => (
                 <FlipCard
                   key={c.t}
-                  className="h-48"
+                  className={`h-48 lg:col-span-2 ${i === 2 ? "sm:col-span-2" : ""}`}
                   style={{ ["--i" as any]: i }}
                   front={
                     <div className="card card-hover flex h-full flex-col p-5">
@@ -609,14 +610,14 @@ export default function Home() {
             </div>
 
             {/* Animated stats counter */}
-            <Reveal>
+            <Reveal className="sm:col-span-2 lg:col-span-6">
               <StatsCounter />
             </Reveal>
 
             {/* What you can discover — fills the column & shows the breadth */}
-            <div className="card p-5">
+            <div className="card flex flex-col p-5 sm:col-span-2 lg:col-span-3">
               <p className="mb-3 text-sm font-bold">One query finds it all</p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="grid flex-1 auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
                 {[
                   { icon: <Icon.paper className="h-4 w-4" />, l: "Papers" },
                   { icon: <Icon.dataset className="h-4 w-4" />, l: "Datasets" },
@@ -637,9 +638,9 @@ export default function Home() {
             </div>
 
             {/* How it works — three quick steps */}
-            <div className="card p-5">
+            <div className="card flex flex-col p-5 sm:col-span-2 lg:col-span-3">
               <p className="mb-3 text-sm font-bold">How it works</p>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid flex-1 content-center gap-4 sm:grid-cols-3 lg:grid-cols-1">
                 {[
                   { n: "1", t: "Ask in plain English", d: "Type a topic or a question — no operators needed." },
                   { n: "2", t: "Agents fan out", d: "Ten agents search and rank across live sources." },
@@ -660,7 +661,7 @@ export default function Home() {
           </div>
 
           {/* Trending sidebar */}
-          <aside className="card animate-fade-up p-5">
+          <aside className="card flex flex-col animate-fade-up p-5 sm:col-span-2 lg:col-span-2 lg:row-span-2">
             <div className="mb-4 flex items-center gap-2.5">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent-50 text-accent-600 dark:bg-accent-500/15 dark:text-accent-300">
                 <Icon.trend className="h-5 w-5" />
@@ -670,7 +671,7 @@ export default function Home() {
                 <p className="text-xs text-ink-400">Hot topics right now</p>
               </div>
             </div>
-            <ol className="space-y-0.5">
+            <ol className="flex-1 space-y-0.5">
               {trending.slice(0, 10).map((t, i) => (
                 <li key={t.topic}>
                   <button onClick={() => { setQ(t.topic); run(t.topic); }}
