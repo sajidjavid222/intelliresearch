@@ -63,16 +63,16 @@
   100% { transform: translateX(220%) skewX(-12deg); }
 }
 
-/* Gentle glassy entrance for route changes (applied by app/template.tsx). */
+/* Glassy 3D-depth entrance for route changes (applied by app/template.tsx). */
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.995);
-    filter: blur(5px);
+    transform: perspective(1400px) translateY(14px) translateZ(-50px) rotateX(4deg);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: perspective(1400px) translateY(0) translateZ(0) rotateX(0deg);
     filter: blur(0);
   }
 }

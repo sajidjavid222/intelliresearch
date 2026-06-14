@@ -24,6 +24,7 @@ import { StatsCounter } from "@/components/StatsCounter";
 import { SourceMarquee } from "@/components/SourceMarquee";
 import { Reveal } from "@/components/Reveal";
 import { Magnetic } from "@/components/Magnetic";
+import { Tilt } from "@/components/Tilt";
 import {
   applyFilters,
   EMPTY_FILTERS,
@@ -38,8 +39,9 @@ import {
   saveLastSearch,
 } from "@/lib/searchStore";
 
-// 3D hero background — WebGL can't SSR, so load it client-only and lazily.
+// 3D scenes — WebGL can't SSR, so load them client-only and lazily.
 const Hero3D = dynamic(() => import("@/components/Hero3D"), { ssr: false });
+const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), { ssr: false });
 
 const EXAMPLES = [
   "Large language models for code generation",
@@ -550,13 +552,15 @@ export default function Home() {
                 { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word)." },
                 { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go." },
               ].map((c, i) => (
-                <div key={c.t} className="card card-hover group p-5" style={{ ["--i" as any]: i }}>
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-brand-600 transition group-hover:scale-105 dark:from-brand-500/15 dark:to-accent-500/15 dark:text-brand-300">
-                    {c.icon}
-                  </span>
-                  <p className="mt-3 font-bold">{c.t}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-500">{c.d}</p>
-                </div>
+                <Tilt key={c.t} max={7} className="h-full" style={{ ["--i" as any]: i }}>
+                  <div className="card card-hover group h-full p-5">
+                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-brand-600 transition group-hover:scale-105 dark:from-brand-500/15 dark:to-accent-500/15 dark:text-brand-300">
+                      {c.icon}
+                    </span>
+                    <p className="mt-3 font-bold">{c.t}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-ink-500">{c.d}</p>
+                  </div>
+                </Tilt>
               ))}
             </div>
 
@@ -667,6 +671,10 @@ export default function Home() {
           <div className="dot-grid pointer-events-none absolute inset-0 opacity-40" />
           <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 animate-blob bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute -right-10 bottom-0 h-48 w-48 animate-blob-slow bg-white/10 blur-2xl" />
+          {/* Drifting 3D wireframe objects */}
+          <div className="pointer-events-none absolute inset-0">
+            <FloatingShapes tone="light" />
+          </div>
           <div className="relative">
             <h2 className="font-display text-3xl font-semibold leading-tight sm:text-4xl">
               Start your next literature review in seconds.

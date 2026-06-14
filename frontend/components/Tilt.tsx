@@ -11,10 +11,12 @@ export function Tilt({
   children,
   className = "",
   max = 5,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   max?: number;
+  style?: React.CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const frame = useRef<number | undefined>(undefined);
@@ -43,7 +45,13 @@ export function Tilt({
   }
 
   return (
-    <div ref={ref} onMouseMove={onMove} onMouseLeave={reset} className={`tilt-3d ${className}`}>
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={reset}
+      className={`tilt-3d ${className}`}
+      style={style}
+    >
       {children}
     </div>
   );
