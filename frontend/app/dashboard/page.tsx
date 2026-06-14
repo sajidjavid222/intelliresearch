@@ -90,6 +90,21 @@ export default function Dashboard() {
     { label: "History", value: history.length, icon: <Icon.review className="h-4 w-4" /> },
   ];
 
+  // De-duplicate and cap the history so the card stays compact (one giant
+  // unbounded list is what unbalanced the widget columns).
+  const recentHistory = (() => {
+    const seen = new Set<string>();
+    const out: any[] = [];
+    for (const h of history) {
+      const key = `${h.item_type}:${h.title}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(h);
+      if (out.length >= 8) break;
+    }
+    return out;
+  })();
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -243,8 +258,8 @@ export default function Dashboard() {
               <Icon.review className="h-5 w-5 text-ink-400" /> Recent searches
             </h2>
             <ul className="space-y-1 text-sm">
-              {history.length === 0 && <li className="text-ink-400">No history yet.</li>}
-              {history.map((h, i) => {
+              {recentHistory.length === 0 && <li className="text-ink-400">No history yet.</li>}
+              {recentHistory.map((h, i) => {
                 const isSearch = h.item_type === "search";
                 const inner = (
                   <>
@@ -284,7 +299,7 @@ export default function Dashboard() {
                 <Icon.search className="h-5 w-5 text-brand-500" /> Saved searches
               </h2>
               <div className="mt-3 space-y-1.5">
-                {searches.map((s) => (
+                {searches.slice(0, 8).map((s) => (
                   <a
                     key={s.id}
                     href={`/?q=${encodeURIComponent(s.query)}`}
