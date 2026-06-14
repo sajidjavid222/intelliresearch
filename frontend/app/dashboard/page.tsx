@@ -170,6 +170,14 @@ export default function Dashboard() {
       {/* Profile (full width) */}
       <ProfileEditor user={user} onSaved={setUser} />
 
+      {/* Library & chat — side by side */}
+      <Reveal>
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Collections pageSize={6} />
+          <LibraryChat />
+        </div>
+      </Reveal>
+
       {/* Widgets — masonry packs cards by height so there's no dead space */}
       <Reveal>
       <div className="columns-1 gap-5 lg:columns-2 [&>*]:mb-5 [&>*]:break-inside-avoid">
@@ -212,9 +220,6 @@ export default function Dashboard() {
               ))}
             </div>
           </section>
-
-          {/* Library & collections */}
-          <Collections />
 
           {/* History */}
           <section className="card p-5">
@@ -311,10 +316,6 @@ export default function Dashboard() {
             </div>
           </section>
       </div>
-      </Reveal>
-
-      <Reveal>
-        <LibraryChat />
       </Reveal>
 
       <Reveal>

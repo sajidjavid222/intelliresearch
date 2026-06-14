@@ -208,7 +208,7 @@ function ExportCitations({ collectionId }: { collectionId: string | null }) {
   );
 }
 
-export function Collections() {
+export function Collections({ pageSize = 15 }: { pageSize?: number }) {
   const toast = useToast();
   const [colls, setColls] = useState<Coll[]>([]);
   const [items, setItems] = useState<Item[]>([]);
@@ -216,10 +216,10 @@ export function Collections() {
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState("brand");
-  const [visible, setVisible] = useState(15);
+  const [visible, setVisible] = useState(pageSize);
 
   // Reset the visible window when the collection filter changes.
-  useEffect(() => setVisible(15), [active]);
+  useEffect(() => setVisible(pageSize), [active, pageSize]);
 
   async function refresh() {
     const [c, it] = await Promise.all([api.listCollections(), api.listItems()]);
@@ -362,10 +362,10 @@ export function Collections() {
         ))}
         {shown.length > visible && (
           <button
-            onClick={() => setVisible((v) => v + 20)}
+            onClick={() => setVisible((v) => v + pageSize)}
             className="w-full rounded-lg border border-ink-200 py-2 text-sm font-medium text-ink-500 transition hover:border-brand-300 hover:text-brand-600 dark:border-ink-800 dark:hover:text-brand-400"
           >
-            Show {Math.min(20, shown.length - visible)} more
+            Show {Math.min(pageSize, shown.length - visible)} more
           </button>
         )}
       </div>

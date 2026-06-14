@@ -47,7 +47,7 @@ export function LibraryChat() {
   }
 
   return (
-    <section className="card p-5">
+    <section className="card flex h-full flex-col p-5">
       <div className="mb-3 flex items-center gap-2">
         <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-600 text-white">
           <Icon.sparkles className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function LibraryChat() {
         </div>
       </div>
 
-      <div ref={scroller} className="max-h-80 space-y-3 overflow-y-auto">
+      <div ref={scroller} className="min-h-[14rem] flex-1 space-y-3 overflow-y-auto">
         {msgs.length === 0 && (
           <div className="flex flex-wrap gap-2">
             {SUGGESTIONS.map((s) => (
