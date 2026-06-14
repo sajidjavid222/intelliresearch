@@ -42,6 +42,7 @@ import {
 // 3D scenes — WebGL can't SSR, so load them client-only and lazily.
 const Hero3D = dynamic(() => import("@/components/Hero3D"), { ssr: false });
 const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), { ssr: false });
+const AgentOrbit = dynamic(() => import("@/components/AgentOrbit"), { ssr: false });
 
 const EXAMPLES = [
   "Large language models for code generation",
@@ -544,6 +545,26 @@ export default function Home() {
 
       {/* ---------- Landing (no results yet) ---------- */}
       {!res && !loading && !error && (
+        <>
+          {/* 3D agent orbit centerpiece */}
+          <Reveal>
+            <section className="card relative p-6 text-center">
+              <span className="chip mx-auto bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                <Icon.sparkles className="h-3.5 w-3.5" /> 10 specialized agents
+              </span>
+              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                Ten agents, one query
+              </h2>
+              <p className="mx-auto mt-1 max-w-xl text-sm text-ink-500">
+                Each masters a slice of the research landscape — they fan out in parallel,
+                then hand off to the synthesis agents. Drag to explore.
+              </p>
+              <div className="mt-2 h-[360px] w-full">
+                <AgentOrbit />
+              </div>
+            </section>
+          </Reveal>
+
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-4 lg:col-span-2">
             <div className="stagger grid gap-3 sm:grid-cols-3">
@@ -659,6 +680,7 @@ export default function Home() {
             </p>
           </aside>
         </div>
+        </>
       )}
 
       {/* ---------- Closing CTA (landing only) ---------- */}
