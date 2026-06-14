@@ -187,14 +187,24 @@ export function EmptyState({
   icon,
   title,
   hint,
+  compact = false,
 }: {
   icon?: ReactNode;
   title: string;
   hint?: string;
+  compact?: boolean;
 }) {
   return (
-    <div className="card flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
-      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-ink-100 text-ink-400 dark:bg-ink-800">
+    <div
+      className={`flex flex-col items-center justify-center text-center ${
+        compact ? "gap-2 px-4 py-6" : "card gap-3 px-6 py-14"
+      }`}
+    >
+      <div
+        className={`grid place-items-center rounded-2xl bg-ink-100 text-ink-400 dark:bg-ink-800 ${
+          compact ? "h-9 w-9" : "h-12 w-12"
+        }`}
+      >
         {icon || <Icon.search className="h-5 w-5" />}
       </div>
       <p className="font-semibold text-ink-700 dark:text-ink-200">{title}</p>

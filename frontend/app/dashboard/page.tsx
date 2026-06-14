@@ -11,6 +11,7 @@ import { ProfileEditor } from "@/components/ProfileEditor";
 import { Collections } from "@/components/Collections";
 import { AccountSettings } from "@/components/AccountSettings";
 import { LibraryChat } from "@/components/LibraryChat";
+import { Masonry } from "@/components/Masonry";
 import { Reveal } from "@/components/Reveal";
 
 const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), { ssr: false });
@@ -192,9 +193,9 @@ export default function Dashboard() {
         </div>
       </Reveal>
 
-      {/* Widgets — masonry packs the cards tightly so no column leaves a gap */}
+      {/* Widgets — true masonry packs each card into the shortest column */}
       <Reveal>
-        <div className="gap-5 [column-fill:balance] lg:columns-2 [&>section]:mb-5 [&>section]:break-inside-avoid">
+        <Masonry columns={2} gap={20}>
           {/* Alerts */}
           <section className="card p-5">
             <div className="mb-3 flex items-center justify-between">
@@ -210,6 +211,7 @@ export default function Dashboard() {
             <div className="space-y-2">
               {alerts.length === 0 && (
                 <EmptyState
+                  compact
                   icon={<Icon.bell className="h-5 w-5" />}
                   title="No alerts yet"
                   hint="Subscribe to a topic below, then hit “Check for updates”."
@@ -330,7 +332,7 @@ export default function Dashboard() {
               ))}
             </div>
           </section>
-        </div>
+        </Masonry>
       </Reveal>
 
       <Reveal>
