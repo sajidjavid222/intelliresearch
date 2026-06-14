@@ -185,6 +185,11 @@ export const api = {
   },
   deleteItem: (id: string) =>
     req(`/api/dashboard/items/${id}`, { method: "DELETE" }),
+  libraryChat: (question: string) =>
+    req<{ answer: string; sources: any[] }>("/api/dashboard/library/chat", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    }),
   moveItem: (id: string, collection_id: string | null) =>
     req(`/api/dashboard/items/${id}/move`, {
       method: "POST",

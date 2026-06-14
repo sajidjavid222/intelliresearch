@@ -298,6 +298,49 @@ async def export_citations(
     )
 
 
+@router.post("/library/chat")
+async def library_chat(
+    body: dict,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """RAG over the user's whole saved-paper library, with citations."""
+    from app.agents import rag
+    from app.schemas import Paper
+
+    question = (body.get("question") or "").strip()
+    if not question:
+        raise HTTPException(422, "Please enter a question.")
+
+    rows = (
+        await db.execute(
+            select(SavedItem).where(
+                SavedItem.user_id == user.id, SavedItem.item_type == "paper"
+            )
+        )
+    ).scalars().all()
+    papers = []
+    for r in rows:
+        payload = dict(r.payload or {})
+        payload.setdefault("title", r.title)
+        payload.setdefault("authors", [])
+        payload.setdefault("source", payload.get("source") or "")
+        payload.setdefault("relevance_score", 0.0)
+        payload.setdefault("is_seminal", False)
+        payload.setdefault("fields_of_study", [])
+        try:
+            papers.append(Paper(**payload))
+        except Exception:
+            continue
+
+    if not papers:
+        return {
+            "answer": "Your library has no saved papers yet — save some from search, then ask away.",
+            "sources": [],
+        }
+    return await rag.chat_with_papers(question, "", papers)
+
+
 # ---------- Saved searches ----------
 @router.post("/searches")
 async def save_search(

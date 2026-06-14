@@ -9,6 +9,7 @@ import { EmptyState, Icon } from "@/components/ui";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { Collections } from "@/components/Collections";
 import { AccountSettings } from "@/components/AccountSettings";
+import { LibraryChat } from "@/components/LibraryChat";
 import { Reveal } from "@/components/Reveal";
 
 export default function Dashboard() {
@@ -310,6 +311,10 @@ export default function Dashboard() {
             </div>
           </section>
       </div>
+      </Reveal>
+
+      <Reveal>
+        <LibraryChat />
       </Reveal>
 
       <Reveal>
