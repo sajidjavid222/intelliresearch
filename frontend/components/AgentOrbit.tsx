@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Html, MeshDistortMaterial, OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
+
+type Node = { label: string; color: string; pos: [number, number, number] };
 
 const AGENTS = [
   { label: "Papers", color: "#34d3a1" },
@@ -16,6 +19,52 @@ const AGENTS = [
   { label: "Proposals", color: "#34d3a1" },
   { label: "Collaborators", color: "#c084fc" },
 ];
+
+function AgentNode({ node }: { node: Node }) {
+  const orb = useRef<THREE.Mesh>(null);
+  const label = useRef<HTMLDivElement>(null);
+  const wp = useMemo(() => new THREE.Vector3(), []);
+  const cd = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame((state) => {
+    if (!orb.current || !label.current) return;
+    orb.current.getWorldPosition(wp);
+    cd.copy(state.camera.position).normalize();
+    // dot > 0 → this agent is on the hemisphere facing the camera.
+    const facing = wp.normalize().dot(cd);
+    label.current.style.opacity = String(
+      THREE.MathUtils.clamp((facing + 0.1) / 0.55, 0, 1)
+    );
+  });
+
+  return (
+    <Float position={node.pos} speed={1.4} rotationIntensity={0.5} floatIntensity={0.4}>
+      <mesh ref={orb}>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <meshPhysicalMaterial
+          color={node.color}
+          transmission={1}
+          thickness={1.4}
+          roughness={0.08}
+          ior={1.4}
+          metalness={0}
+          clearcoat={1}
+          clearcoatRoughness={0.12}
+          transparent
+        />
+      </mesh>
+      <Html center distanceFactor={10} position={[0, 0.62, 0]} zIndexRange={[20, 0]}>
+        <div
+          ref={label}
+          style={{ transition: "opacity 0.25s ease" }}
+          className="whitespace-nowrap rounded-full border border-white/50 bg-white/60 px-2.5 py-0.5 text-[11px] font-semibold text-ink-700 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-ink-900/50 dark:text-ink-100"
+        >
+          {node.label}
+        </div>
+      </Html>
+    </Float>
+  );
+}
 
 function Orbit() {
   const R = 2.4;
@@ -79,35 +128,9 @@ function Orbit() {
         </mesh>
       </Float>
 
-      {/* Glass agent orbs on the track */}
+      {/* Glass agent orbs (labels fade out on the far side) */}
       {nodes.map((n, i) => (
-        <Float
-          key={i}
-          position={n.pos}
-          speed={1.4}
-          rotationIntensity={0.5}
-          floatIntensity={0.4}
-        >
-          <mesh>
-            <sphereGeometry args={[0.4, 32, 32]} />
-            <meshPhysicalMaterial
-              color={n.color}
-              transmission={1}
-              thickness={1.4}
-              roughness={0.08}
-              ior={1.4}
-              metalness={0}
-              clearcoat={1}
-              clearcoatRoughness={0.12}
-              transparent
-            />
-          </mesh>
-          <Html center distanceFactor={10} position={[0, 0.62, 0]} zIndexRange={[20, 0]}>
-            <div className="whitespace-nowrap rounded-full border border-white/50 bg-white/60 px-2.5 py-0.5 text-[11px] font-semibold text-ink-700 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-ink-900/50 dark:text-ink-100">
-              {n.label}
-            </div>
-          </Html>
-        </Float>
+        <AgentNode key={i} node={n} />
       ))}
     </group>
   );
