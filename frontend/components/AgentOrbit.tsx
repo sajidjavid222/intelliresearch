@@ -18,18 +18,15 @@ const AGENTS = [
 ];
 
 function Orbit() {
-  const R = 2.9;
+  const R = 2.7;
+  // Clean, evenly-spaced ring (flat, viewed from an elevated angle).
   const nodes = useMemo(
     () =>
       AGENTS.map((a, i) => {
-        const ang = (i / AGENTS.length) * Math.PI * 2;
+        const ang = (i / AGENTS.length) * Math.PI * 2 - Math.PI / 2;
         return {
           ...a,
-          pos: [R * Math.cos(ang), Math.sin(ang * 2) * 0.5, R * Math.sin(ang)] as [
-            number,
-            number,
-            number,
-          ],
+          pos: [R * Math.cos(ang), 0, R * Math.sin(ang)] as [number, number, number],
         };
       }),
     []
@@ -42,29 +39,17 @@ function Orbit() {
   return (
     <group>
       <ambientLight intensity={1} />
-      <pointLight position={[0, 0, 0]} intensity={3} color="#34d3a1" distance={16} />
+      <pointLight position={[0, 0, 0]} intensity={3.2} color="#34d3a1" distance={18} />
       <directionalLight position={[5, 6, 5]} intensity={1.1} />
       <directionalLight position={[-6, -3, -4]} intensity={0.5} color="#8b5cf6" />
 
-      {/* Morphing glassy core */}
-      <Float speed={1.4} rotationIntensity={0.4} floatIntensity={0.4}>
-        <mesh>
-          <sphereGeometry args={[0.95, 48, 48]} />
-          <MeshDistortMaterial
-            color="#13b886"
-            emissive="#0a4e3c"
-            emissiveIntensity={0.35}
-            distort={0.38}
-            speed={1.8}
-            roughness={0.12}
-            metalness={0.15}
-            transparent
-            opacity={0.92}
-          />
-        </mesh>
-      </Float>
+      {/* Visible orbit track (the agents sit on it) */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[R, 0.015, 16, 120]} />
+        <meshBasicMaterial color="#8b5cf6" transparent opacity={0.3} />
+      </mesh>
 
-      {/* Spokes */}
+      {/* Spokes from core to each agent */}
       <lineSegments>
         <bufferGeometry>
           <bufferAttribute
@@ -74,20 +59,38 @@ function Orbit() {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#8b5cf6" transparent opacity={0.14} />
+        <lineBasicMaterial color="#34d3a1" transparent opacity={0.16} />
       </lineSegments>
 
-      {/* Glass agent orbs */}
+      {/* Big morphing glass core fills the centre */}
+      <Float speed={1.4} rotationIntensity={0.4} floatIntensity={0.25}>
+        <mesh>
+          <sphereGeometry args={[1.1, 48, 48]} />
+          <MeshDistortMaterial
+            color="#13b886"
+            emissive="#0a4e3c"
+            emissiveIntensity={0.42}
+            distort={0.4}
+            speed={1.9}
+            roughness={0.12}
+            metalness={0.15}
+            transparent
+            opacity={0.92}
+          />
+        </mesh>
+      </Float>
+
+      {/* Glass agent orbs on the track */}
       {nodes.map((n, i) => (
         <Float
           key={i}
           position={n.pos}
-          speed={1.5}
+          speed={1.4}
           rotationIntensity={0.5}
-          floatIntensity={0.7}
+          floatIntensity={0.4}
         >
           <mesh>
-            <sphereGeometry args={[0.36, 32, 32]} />
+            <sphereGeometry args={[0.4, 32, 32]} />
             <meshPhysicalMaterial
               color={n.color}
               transmission={1}
@@ -100,8 +103,8 @@ function Orbit() {
               transparent
             />
           </mesh>
-          <Html center distanceFactor={11} position={[0, 0.62, 0]} zIndexRange={[20, 0]}>
-            <div className="whitespace-nowrap rounded-full border border-white/50 bg-white/55 px-2.5 py-0.5 text-[11px] font-semibold text-ink-700 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-ink-900/50 dark:text-ink-100">
+          <Html center distanceFactor={10} position={[0, 0.62, 0]} zIndexRange={[20, 0]}>
+            <div className="whitespace-nowrap rounded-full border border-white/50 bg-white/60 px-2.5 py-0.5 text-[11px] font-semibold text-ink-700 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-ink-900/50 dark:text-ink-100">
               {n.label}
             </div>
           </Html>
@@ -150,7 +153,7 @@ export default function AgentOrbit() {
   return (
     <div ref={wrap} style={{ width: "100%", height: "100%" }}>
       <Canvas
-        camera={{ position: [0, 1.4, 9], fov: 50 }}
+        camera={{ position: [0, 4, 7], fov: 45 }}
         dpr={[1, 1.5]}
         frameloop={active ? "always" : "never"}
         gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
@@ -162,8 +165,8 @@ export default function AgentOrbit() {
           enableZoom={false}
           autoRotate={!reduced && active}
           autoRotateSpeed={0.85}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 1.7}
+          minPolarAngle={Math.PI / 4}
+          maxPolarAngle={Math.PI / 2.1}
         />
       </Canvas>
     </div>

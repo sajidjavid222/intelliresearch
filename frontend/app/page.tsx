@@ -570,7 +570,7 @@ export default function Home() {
                   Each masters a slice of the research landscape — they fan out in parallel,
                   then hand off to the synthesis agents. Drag to explore.
                 </p>
-                <div className="mt-1 h-[400px] w-full">
+                <div className="mx-auto mt-1 h-[380px] w-full max-w-2xl">
                   <AgentOrbit />
                 </div>
               </div>
