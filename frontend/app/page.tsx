@@ -19,7 +19,7 @@ import { ExportMenu } from "@/components/ExportMenu";
 import { ProposalBanner } from "@/components/ProposalBanner";
 import { EmptyState, Icon, SkeletonCards } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { TrendChart } from "@/components/Charts";
+import { TrendChart, ResultInsights } from "@/components/Charts";
 import { StatsCounter } from "@/components/StatsCounter";
 import { SourceMarquee } from "@/components/SourceMarquee";
 import { Reveal } from "@/components/Reveal";
@@ -429,6 +429,9 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* Results analytics — year histogram, venues & source mix */}
+          {res.papers.length >= 3 && <ResultInsights papers={res.papers} />}
 
           {/* AI proposal generator — surfaced so it's discoverable */}
           {res.papers.length > 0 && <ProposalBanner topic={res.query} />}
