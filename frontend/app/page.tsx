@@ -554,21 +554,25 @@ export default function Home() {
       {/* ---------- Landing (no results yet) ---------- */}
       {!res && !loading && !error && (
         <>
-          {/* 3D agent orbit centerpiece */}
+          {/* 3D agent orbit centerpiece — glassmorphic */}
           <Reveal>
-            <section className="card relative p-6 text-center">
-              <span className="chip mx-auto bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
-                <Icon.sparkles className="h-3.5 w-3.5" /> 10 specialized agents
-              </span>
-              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                Ten agents, one query
-              </h2>
-              <p className="mx-auto mt-1 max-w-xl text-sm text-ink-500">
-                Each masters a slice of the research landscape — they fan out in parallel,
-                then hand off to the synthesis agents. Drag to explore.
-              </p>
-              <div className="mt-2 h-[360px] w-full">
-                <AgentOrbit />
+            <section className="card relative overflow-hidden p-6 text-center sm:p-8">
+              <div className="dot-grid pointer-events-none absolute inset-0 opacity-50" />
+              <div className="pointer-events-none absolute left-1/2 top-2 h-72 w-3/4 -translate-x-1/2 animate-aurora rounded-full bg-gradient-to-r from-brand-400/25 via-accent-400/25 to-sky-400/20 blur-3xl" />
+              <div className="relative">
+                <span className="chip mx-auto border border-white/50 bg-white/50 text-brand-700 backdrop-blur dark:border-white/10 dark:bg-ink-900/40 dark:text-brand-300">
+                  <Icon.sparkles className="h-3.5 w-3.5" /> 10 specialized agents
+                </span>
+                <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                  Ten agents, <span className="text-gradient-animated italic">one query</span>
+                </h2>
+                <p className="mx-auto mt-1.5 max-w-xl text-sm text-ink-500">
+                  Each masters a slice of the research landscape — they fan out in parallel,
+                  then hand off to the synthesis agents. Drag to explore.
+                </p>
+                <div className="mt-1 h-[400px] w-full">
+                  <AgentOrbit />
+                </div>
               </div>
             </section>
           </Reveal>
