@@ -24,7 +24,7 @@ import { StatsCounter } from "@/components/StatsCounter";
 import { SourceMarquee } from "@/components/SourceMarquee";
 import { Reveal } from "@/components/Reveal";
 import { Magnetic } from "@/components/Magnetic";
-import { Tilt } from "@/components/Tilt";
+import { FlipCard } from "@/components/FlipCard";
 import {
   applyFilters,
   EMPTY_FILTERS,
@@ -43,6 +43,7 @@ import {
 const Hero3D = dynamic(() => import("@/components/Hero3D"), { ssr: false });
 const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), { ssr: false });
 const AgentOrbit = dynamic(() => import("@/components/AgentOrbit"), { ssr: false });
+const Loader3D = dynamic(() => import("@/components/Loader3D"), { ssr: false });
 
 const EXAMPLES = [
   "Large language models for code generation",
@@ -331,12 +332,19 @@ export default function Home() {
       {loading && (
         <>
           <div className={`card animate-fade-in flex items-center gap-4 p-5 ${wakingRetry ? "border-amber-300/60 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10" : ""}`}>
-            <span className="relative grid h-11 w-11 shrink-0 place-items-center">
-              <span className={`absolute inset-0 animate-pulse-ring rounded-full ${wakingRetry ? "bg-amber-400/40" : "bg-brand-400/40"}`} />
-              <span className={`grid h-11 w-11 place-items-center rounded-full text-white ${wakingRetry ? "bg-amber-500" : "bg-brand-500"}`}>
-                {wakingRetry ? <Icon.moon className="h-5 w-5" /> : <Icon.search className="h-5 w-5" />}
+            {wakingRetry ? (
+              <span className="relative grid h-11 w-11 shrink-0 place-items-center">
+                <span className="absolute inset-0 animate-pulse-ring rounded-full bg-amber-400/40" />
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-amber-500 text-white">
+                  <Icon.moon className="h-5 w-5" />
+                </span>
               </span>
-            </span>
+            ) : (
+              <span className="relative grid h-14 w-14 shrink-0 place-items-center">
+                <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-400/40" />
+                <Loader3D />
+              </span>
+            )}
             <div className="min-w-0">
               {wakingRetry ? (
                 <>
@@ -569,19 +577,30 @@ export default function Home() {
           <div className="space-y-4 lg:col-span-2">
             <div className="stagger grid gap-3 sm:grid-cols-3">
               {[
-                { icon: <Icon.paper className="h-5 w-5" />, t: "Discover & rank", d: "arXiv, Semantic Scholar, OpenAlex, PubMed & more — with seminal-paper detection." },
-                { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word)." },
-                { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go." },
+                { icon: <Icon.paper className="h-5 w-5" />, t: "Discover & rank", d: "arXiv, Semantic Scholar, OpenAlex, PubMed & more — with seminal-paper detection.", b: "e.g. “graph neural networks” → dozens of ranked papers, with seminal works flagged." },
+                { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word).", b: "Ask a question → a cited answer, then a full literature review and a proposal draft." },
+                { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go.", b: "One query fans out to 10 agents across 12+ live sources, all in parallel." },
               ].map((c, i) => (
-                <Tilt key={c.t} max={7} className="h-full" style={{ ["--i" as any]: i }}>
-                  <div className="card card-hover group h-full p-5">
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-brand-600 transition group-hover:scale-105 dark:from-brand-500/15 dark:to-accent-500/15 dark:text-brand-300">
-                      {c.icon}
-                    </span>
-                    <p className="mt-3 font-bold">{c.t}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-ink-500">{c.d}</p>
-                  </div>
-                </Tilt>
+                <FlipCard
+                  key={c.t}
+                  className="h-48"
+                  style={{ ["--i" as any]: i }}
+                  front={
+                    <div className="card card-hover flex h-full flex-col p-5">
+                      <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-brand-600 dark:from-brand-500/15 dark:to-accent-500/15 dark:text-brand-300">
+                        {c.icon}
+                      </span>
+                      <p className="mt-3 font-bold">{c.t}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-500">{c.d}</p>
+                      <p className="mt-auto pt-2 text-[11px] font-medium text-ink-400">Hover to see an example ↻</p>
+                    </div>
+                  }
+                  back={
+                    <div className="card flex h-full flex-col justify-center overflow-hidden bg-gradient-to-br from-brand-500 to-accent-600 p-5 text-white">
+                      <p className="text-sm font-semibold leading-relaxed">{c.b}</p>
+                    </div>
+                  }
+                />
               ))}
             </div>
 

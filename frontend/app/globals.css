@@ -226,6 +226,29 @@
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     will-change: transform;
   }
+  /* 3D flip card — front/back faces, flips on hover/focus. */
+  .flip {
+    perspective: 1100px;
+  }
+  .flip-inner {
+    position: relative;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .flip:hover .flip-inner,
+  .flip:focus-within .flip-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .flip-back {
+    transform: rotateY(180deg);
+  }
   /* Hero 3D fade so text stays readable: radial (top-right) on mobile, a
      left-to-right fade on desktop where the scene sits on the right. */
   .hero3d-mask {
@@ -267,6 +290,13 @@
     .tilt-3d {
       transform: none !important;
       transition: none;
+    }
+    .flip-inner {
+      transition: none;
+    }
+    .flip:hover .flip-inner,
+    .flip:focus-within .flip-inner {
+      transform: none;
     }
   }
   /* Subtle dot-grid background for hero panels. */
