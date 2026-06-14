@@ -32,9 +32,9 @@ function AgentNode({ node }: { node: Node }) {
     cd.copy(state.camera.position).normalize();
     // dot > 0 → this agent is on the hemisphere facing the camera.
     const facing = wp.normalize().dot(cd);
-    label.current.style.opacity = String(
-      THREE.MathUtils.clamp((facing + 0.1) / 0.55, 0, 1)
-    );
+    // Soft, wide fade across most of the rotation; back labels stay barely visible.
+    const o = THREE.MathUtils.clamp((facing + 0.6) / 1.2, 0, 1);
+    label.current.style.opacity = String(0.08 + o * 0.92);
   });
 
   return (
@@ -56,7 +56,7 @@ function AgentNode({ node }: { node: Node }) {
       <Html center distanceFactor={10} position={[0, 0.62, 0]} zIndexRange={[20, 0]}>
         <div
           ref={label}
-          style={{ transition: "opacity 0.25s ease" }}
+          style={{ transition: "opacity 0.5s ease" }}
           className="whitespace-nowrap rounded-full border border-white/50 bg-white/60 px-2.5 py-0.5 text-[11px] font-semibold text-ink-700 shadow-soft backdrop-blur-md dark:border-white/10 dark:bg-ink-900/50 dark:text-ink-100"
         >
           {node.label}
