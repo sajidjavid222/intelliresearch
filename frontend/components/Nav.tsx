@@ -180,12 +180,7 @@ export function Nav() {
             onClick={() => setMenuOpen(false)}
           />
           <nav className="absolute inset-x-0 z-30 animate-fade-up border-b border-ink-200/70 bg-white px-4 py-4 shadow-lift dark:border-ink-800 dark:bg-ink-950">
-            <div className="flex flex-col gap-1">
-              {LINKS.map((l) => (
-                <NavLink key={l.href} href={l.href} label={l.label} onClick={() => setMenuOpen(false)} />
-              ))}
-            </div>
-            <div className="mt-3 border-t border-ink-100 pt-3 dark:border-ink-800">
+            <div>
               {user ? (
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-sm font-medium">

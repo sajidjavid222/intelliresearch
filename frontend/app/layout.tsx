@@ -9,6 +9,7 @@ import { CompareProvider } from "@/components/Compare";
 import { ScrollTop } from "@/components/ScrollTop";
 import { ServerWaking } from "@/components/ServerWaking";
 import { SentryInit } from "@/components/SentryInit";
+import { BottomNav } from "@/components/BottomNav";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -101,7 +102,7 @@ export default function RootLayout({
               <main id="main" tabIndex={-1} className="mx-auto max-w-7xl px-4 pb-16 pt-6 outline-none sm:px-6">
                 {children}
               </main>
-              <footer className="mx-auto max-w-7xl px-6 py-12 text-center">
+              <footer className="mx-auto max-w-7xl px-6 pb-28 pt-12 text-center sm:py-12">
                 <blockquote className="mx-auto max-w-xl text-balance font-display text-base italic text-ink-500 dark:text-ink-400">
                   “Research is to see what everybody else has seen, and to think
                   what nobody else has thought.”
@@ -124,6 +125,7 @@ export default function RootLayout({
                   <a href="/terms" className="transition hover:text-brand-600">Terms</a>
                 </p>
               </footer>
+              <BottomNav />
             </CompareProvider>
           </PaperDrawerProvider>
         </ToastProvider>
