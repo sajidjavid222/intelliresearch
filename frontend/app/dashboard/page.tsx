@@ -192,10 +192,9 @@ export default function Dashboard() {
         </div>
       </Reveal>
 
-      {/* Widgets — two balanced stacks so each card has a neighbour (no dead space) */}
+      {/* Widgets — masonry packs the cards tightly so no column leaves a gap */}
       <Reveal>
-        <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
-          <div className="space-y-5">
+        <div className="gap-5 [column-fill:balance] lg:columns-2 [&>section]:mb-5 [&>section]:break-inside-avoid">
           {/* Alerts */}
           <section className="card p-5">
             <div className="mb-3 flex items-center justify-between">
@@ -275,9 +274,7 @@ export default function Dashboard() {
               })}
             </ul>
           </section>
-          </div>
 
-          <div className="space-y-5">
           {/* Saved searches */}
           {searches.length > 0 && (
             <section className="card p-5">
@@ -333,7 +330,6 @@ export default function Dashboard() {
               ))}
             </div>
           </section>
-          </div>
         </div>
       </Reveal>
 
