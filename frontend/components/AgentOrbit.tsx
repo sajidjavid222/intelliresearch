@@ -18,19 +18,24 @@ const AGENTS = [
 ];
 
 function Orbit() {
-  const R = 2.7;
-  // Clean, evenly-spaced ring (flat, viewed from an elevated angle).
-  const nodes = useMemo(
-    () =>
-      AGENTS.map((a, i) => {
-        const ang = (i / AGENTS.length) * Math.PI * 2 - Math.PI / 2;
-        return {
-          ...a,
-          pos: [R * Math.cos(ang), 0, R * Math.sin(ang)] as [number, number, number],
-        };
-      }),
-    []
-  );
+  const R = 2.4;
+  // Fibonacci-sphere distribution — agents surround the core like an atom.
+  const nodes = useMemo(() => {
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    return AGENTS.map((a, i) => {
+      const y = 1 - (i / (AGENTS.length - 1)) * 2;
+      const rad = Math.sqrt(Math.max(0, 1 - y * y));
+      const theta = golden * i;
+      return {
+        ...a,
+        pos: [Math.cos(theta) * rad * R, y * R, Math.sin(theta) * rad * R] as [
+          number,
+          number,
+          number,
+        ],
+      };
+    });
+  }, []);
   const lines = useMemo(
     () => new Float32Array(nodes.flatMap((n) => [0, 0, 0, ...n.pos])),
     [nodes]
@@ -43,13 +48,7 @@ function Orbit() {
       <directionalLight position={[5, 6, 5]} intensity={1.1} />
       <directionalLight position={[-6, -3, -4]} intensity={0.5} color="#8b5cf6" />
 
-      {/* Visible orbit track (the agents sit on it) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[R, 0.015, 16, 120]} />
-        <meshBasicMaterial color="#8b5cf6" transparent opacity={0.3} />
-      </mesh>
-
-      {/* Spokes from core to each agent */}
+      {/* Bonds from the nucleus core to each agent */}
       <lineSegments>
         <bufferGeometry>
           <bufferAttribute
@@ -153,7 +152,7 @@ export default function AgentOrbit() {
   return (
     <div ref={wrap} style={{ width: "100%", height: "100%" }}>
       <Canvas
-        camera={{ position: [0, 4, 7], fov: 45 }}
+        camera={{ position: [0, 1, 8], fov: 45 }}
         dpr={[1, 1.5]}
         frameloop={active ? "always" : "never"}
         gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
@@ -164,9 +163,9 @@ export default function AgentOrbit() {
           enablePan={false}
           enableZoom={false}
           autoRotate={!reduced && active}
-          autoRotateSpeed={0.85}
-          minPolarAngle={Math.PI / 4}
-          maxPolarAngle={Math.PI / 2.1}
+          autoRotateSpeed={0.9}
+          minPolarAngle={Math.PI / 3.5}
+          maxPolarAngle={Math.PI / 1.55}
         />
       </Canvas>
     </div>
