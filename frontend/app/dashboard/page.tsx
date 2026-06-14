@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
@@ -11,6 +12,8 @@ import { Collections } from "@/components/Collections";
 import { AccountSettings } from "@/components/AccountSettings";
 import { LibraryChat } from "@/components/LibraryChat";
 import { Reveal } from "@/components/Reveal";
+
+const FloatingShapes = dynamic(() => import("@/components/FloatingShapes"), { ssr: false });
 
 export default function Dashboard() {
   const router = useRouter();
@@ -89,7 +92,17 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="card relative overflow-hidden p-5">
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/3 opacity-70 sm:block"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, #000 60%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, #000 60%)",
+          }}
+        >
+          <FloatingShapes tone="brand" />
+        </div>
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-brand-400 to-accent-500 text-lg font-bold text-white">
             {(user.name || user.email)[0]?.toUpperCase()}
@@ -107,6 +120,7 @@ export default function Dashboard() {
           <Icon.bell className="h-4 w-4" />
           {busy ? "Checking…" : "Check for updates"}
         </button>
+        </div>
       </div>
 
       {/* First-run welcome (new users only) */}

@@ -8,6 +8,8 @@ import * as THREE from "three";
 // the canvas's clip space (-1..1) so the shader can light up nearby nodes.
 const mouse = { x: 0, y: 0 };
 const glowMouse = { x: -2, y: -2 };
+// 0..1 as the hero scrolls out of view — drives extra rotation + zoom.
+const heroScroll = { v: 0 };
 
 // Nodes glow + grow as the cursor passes near them (proximity in clip space),
 // with a gentle per-node twinkle so the graph feels alive.
@@ -96,6 +98,9 @@ function Constellation({ mobile }: { mobile: boolean }) {
     g.rotation.y += delta * 0.11;
     g.rotation.x = THREE.MathUtils.lerp(g.rotation.x, mouse.y * 0.3, 0.04);
     g.position.x = THREE.MathUtils.lerp(g.position.x, mouse.x * 0.35, 0.04);
+    // Scroll-reactive: bank and zoom in as the hero scrolls away.
+    g.rotation.z = THREE.MathUtils.lerp(g.rotation.z, heroScroll.v * 0.6, 0.06);
+    g.scale.setScalar(THREE.MathUtils.lerp(g.scale.x, 1 + heroScroll.v * 0.4, 0.06));
     uniforms.uTime.value = state.clock.elapsedTime;
     uniforms.uMouse.value.set(glowMouse.x, glowMouse.y);
   });
@@ -178,8 +183,16 @@ export default function Hero3D() {
         glowMouse.y = -(((e.clientY - r.top) / r.height) * 2 - 1);
       }
     };
+    const onScroll = () => {
+      heroScroll.v = Math.min(1, window.scrollY / Math.max(1, window.innerHeight * 0.9));
+    };
     window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
