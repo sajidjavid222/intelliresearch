@@ -162,6 +162,13 @@ export const api = {
     req<User>("/api/auth/me", { method: "PATCH", body: JSON.stringify(body) }),
   deleteAccount: () => req<{ ok: boolean }>("/api/auth/me", { method: "DELETE" }),
   exportData: () => req<Record<string, any>>("/api/dashboard/export"),
+  exportCitations: (fmt: "bibtex" | "ris" | "enw", collectionId?: string) => {
+    const p = new URLSearchParams({ fmt });
+    if (collectionId) p.set("collection_id", collectionId);
+    return fetch(`/api/dashboard/export/citations?${p.toString()}`, {
+      headers: { ...authHeaders() },
+    }).then((r) => r.text());
+  },
 
   // Dashboard
   saveItem: (item_type: string, title: string, payload: any, collection_id?: string) =>

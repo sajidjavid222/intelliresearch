@@ -150,6 +150,64 @@ function ItemRow({
   );
 }
 
+function ExportCitations({ collectionId }: { collectionId: string | null }) {
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+
+  async function download(fmt: "bibtex" | "ris" | "enw", label: string, ext: string) {
+    setOpen(false);
+    try {
+      const text = await api.exportCitations(fmt, collectionId || undefined);
+      if (!text.trim()) {
+        toast("No saved papers to export yet.", "info");
+        return;
+      }
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `intelliresearch-library.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast(`Exported as ${label}.`, "success");
+    } catch {
+      toast("Could not export citations.", "error");
+    }
+  }
+
+  const opts: [("bibtex" | "ris" | "enw"), string, string, string][] = [
+    ["bibtex", "BibTeX", "bib", "LaTeX / Overleaf"],
+    ["ris", "RIS", "ris", "Zotero · Mendeley · EndNote"],
+    ["enw", "EndNote", "enw", "EndNote"],
+  ];
+
+  return (
+    <div className="relative">
+      <button className="btn-soft" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <Icon.download className="h-4 w-4" /> Export
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 z-20 mt-1.5 w-56 overflow-hidden rounded-xl border border-ink-200/70 bg-white shadow-lift dark:border-ink-800 dark:bg-ink-900">
+            {opts.map(([fmt, label, ext, hint]) => (
+              <button
+                key={fmt}
+                onClick={() => download(fmt, label, ext)}
+                className="block w-full px-3 py-2.5 text-left text-sm transition hover:bg-brand-50 dark:hover:bg-brand-500/10"
+              >
+                <span className="font-semibold">{label}</span>{" "}
+                <span className="text-ink-400">.{ext}</span>
+                <span className="block text-[11px] text-ink-400">{hint}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function Collections() {
   const toast = useToast();
   const [colls, setColls] = useState<Coll[]>([]);
@@ -205,9 +263,12 @@ export function Collections() {
         <h2 className="flex items-center gap-2 text-lg font-bold">
           <Icon.star className="h-5 w-5 text-amber-400" /> Library & collections
         </h2>
-        <button className="btn-soft" onClick={() => setCreating((v) => !v)}>
-          ＋ New collection
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportCitations collectionId={active} />
+          <button className="btn-soft" onClick={() => setCreating((v) => !v)}>
+            ＋ New collection
+          </button>
+        </div>
       </div>
 
       {/* Create form */}

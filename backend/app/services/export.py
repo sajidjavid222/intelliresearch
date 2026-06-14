@@ -61,6 +61,27 @@ def papers_to_ris(papers: list[Paper]) -> str:
     return "\n\n".join(out)
 
 
+def papers_to_endnote(papers: list[Paper]) -> str:
+    """EndNote tagged format (.enw)."""
+    out = []
+    for p in papers:
+        lines = ["%0 Journal Article", f"%T {p.title}"]
+        for a in p.authors:
+            lines.append(f"%A {a}")
+        if p.year:
+            lines.append(f"%D {p.year}")
+        if p.venue:
+            lines.append(f"%J {p.venue}")
+        if p.abstract:
+            lines.append(f"%X {p.abstract}")
+        if p.doi:
+            lines.append(f"%R {p.doi}")
+        if p.url:
+            lines.append(f"%U {p.url}")
+        out.append("\n".join(lines))
+    return "\n\n".join(out)
+
+
 def proposal_to_markdown(p: Proposal) -> str:
     md = [f"# {p.title}\n", "## Problem Statement\n", p.problem_statement, "\n## Objectives\n"]
     md += [f"- {o}" for o in p.objectives]

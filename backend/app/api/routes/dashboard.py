@@ -251,6 +251,53 @@ async def export_data(
     }
 
 
+@router.get("/export/citations")
+async def export_citations(
+    fmt: str = "bibtex",
+    collection_id: str | None = None,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export saved papers as BibTeX / RIS / EndNote (optionally one collection)."""
+    from fastapi import Response
+
+    from app.schemas import Paper
+    from app.services import export as export_svc
+
+    stmt = select(SavedItem).where(
+        SavedItem.user_id == user.id, SavedItem.item_type == "paper"
+    )
+    if collection_id:
+        stmt = stmt.where(SavedItem.collection_id == collection_id)
+    rows = (await db.execute(stmt.order_by(SavedItem.created_at.desc()))).scalars().all()
+
+    papers = []
+    for r in rows:
+        payload = dict(r.payload or {})
+        payload.setdefault("title", r.title)
+        payload.setdefault("authors", [])
+        payload.setdefault("source", payload.get("source") or "")
+        payload.setdefault("relevance_score", 0.0)
+        payload.setdefault("is_seminal", False)
+        payload.setdefault("fields_of_study", [])
+        try:
+            papers.append(Paper(**payload))
+        except Exception:
+            continue
+
+    if fmt == "ris":
+        content, ext, media = export_svc.papers_to_ris(papers), "ris", "application/x-research-info-systems"
+    elif fmt == "enw":
+        content, ext, media = export_svc.papers_to_endnote(papers), "enw", "application/x-endnote-refer"
+    else:
+        content, ext, media = export_svc.papers_to_bibtex(papers), "bib", "application/x-bibtex"
+    return Response(
+        content=content,
+        media_type=media,
+        headers={"Content-Disposition": f'attachment; filename="intelliresearch-library.{ext}"'},
+    )
+
+
 # ---------- Saved searches ----------
 @router.post("/searches")
 async def save_search(
