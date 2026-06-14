@@ -232,6 +232,14 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ doc_id, question }),
     }),
+  pdfChatMulti: (doc_ids: string[], question: string) =>
+    req<{
+      answer: string;
+      sources: { n: number; page: number; snippet: string; doc_id: string; doc_title: string }[];
+    }>("/api/pdf/chat-multi", {
+      method: "POST",
+      body: JSON.stringify({ doc_ids, question }),
+    }),
 
   // Collections
   listCollections: () =>

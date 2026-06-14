@@ -188,3 +188,55 @@ async def chat(doc_id: str, question: str) -> dict:
     )
     answer = await llm.complete(prompt, system, max_tokens=900)
     return {"answer": answer, "sources": sources}
+
+
+async def chat_multi(doc_ids: list[str], question: str) -> dict:
+    """Answer `question` grounded across SEVERAL documents at once. Sources name
+    both the document and the page."""
+    pool: list[dict] = []
+    for did in doc_ids:
+        doc = _DOCS.get(did)
+        if not doc:
+            continue
+        _DOCS.move_to_end(did)
+        for c in doc["chunks"]:
+            pool.append({
+                "page": c["page"], "text": c["text"],
+                "doc_id": did, "doc_title": doc["title"],
+            })
+    if not pool:
+        return {"error": "not_found"}
+
+    top = _retrieve(question, pool, k=7)
+    sources = [
+        {
+            "n": i, "page": c["page"], "snippet": _norm(c["text"])[:240],
+            "doc_id": c["doc_id"], "doc_title": c["doc_title"],
+        }
+        for i, c in enumerate(top, 1)
+    ]
+
+    llm = get_llm()
+    if not llm.available:
+        bullets = "\n".join(
+            f"• [{s['n']}] {s['doc_title']} (p.{s['page']}) {s['snippet']}…" for s in sources
+        )
+        return {
+            "answer": "LLM not configured — most relevant passages:\n\n" + bullets,
+            "sources": sources,
+        }
+
+    context = "\n\n".join(
+        f"[{i}] ({c['doc_title']}, page {c['page']}) {_norm(c['text'])[:850]}"
+        for i, c in enumerate(top, 1)
+    )
+    system = (
+        "You are a precise research assistant answering a question across MULTIPLE "
+        "documents. Use ONLY the provided excerpts. Cite claims inline with [n] (each "
+        "maps to a document + page). Where documents agree or differ, say so. Be concise."
+    )
+    prompt = (
+        f"Question: {question}\n\nExcerpts:\n{context}\n\nAnswer with inline [n] citations."
+    )
+    answer = await llm.complete(prompt, system, max_tokens=1000)
+    return {"answer": answer, "sources": sources}

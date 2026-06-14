@@ -42,3 +42,24 @@ async def chat(body: PdfChatRequest):
             404, "Document not found — it may have expired. Please re-upload the PDF."
         )
     return out
+
+
+class PdfMultiChatRequest(BaseModel):
+    doc_ids: list[str]
+    question: str
+
+
+@router.post("/chat-multi")
+async def chat_multi(body: PdfMultiChatRequest):
+    """Answer a question across several uploaded PDFs at once."""
+    question = (body.question or "").strip()
+    if not question:
+        raise HTTPException(422, "Please enter a question.")
+    if not body.doc_ids:
+        raise HTTPException(422, "Upload at least one PDF first.")
+    out = await pdf_chat.chat_multi(body.doc_ids, question)
+    if out.get("error") == "not_found":
+        raise HTTPException(
+            404, "Documents not found — they may have expired. Please re-upload."
+        )
+    return out
