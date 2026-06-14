@@ -6,6 +6,19 @@
   --bg: #f6f8f7;
   --bg-grad-1: #d1fae9;
   --bg-grad-2: #ede9fe;
+  /* Themeable brand palette (RGB triplets). Defaults to teal; swapped at
+     runtime by lib/accent.ts. */
+  --brand-50: 236 253 246;
+  --brand-100: 209 250 233;
+  --brand-200: 167 243 214;
+  --brand-300: 110 231 189;
+  --brand-400: 52 211 161;
+  --brand-500: 19 184 134;
+  --brand-600: 8 150 109;
+  --brand-700: 7 120 89;
+  --brand-800: 10 95 72;
+  --brand-900: 10 78 60;
+  --brand-950: 2 44 34;
 }
 
 .dark {

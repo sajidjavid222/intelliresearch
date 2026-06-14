@@ -8,6 +8,7 @@ import type { User } from "@/lib/types";
 import { applyTheme, getInitialTheme, type Theme } from "@/lib/theme";
 import { clearLastSearch } from "@/lib/searchStore";
 import { Icon } from "@/components/ui";
+import { Appearance } from "@/components/Appearance";
 
 const LINKS = [
   { href: "/", label: "Search" },
@@ -130,6 +131,7 @@ export function Nav() {
             <Icon.search className="h-3.5 w-3.5" />
             <kbd className="font-sans font-semibold">⌘K</kbd>
           </button>
+          <Appearance />
           <ThemeToggle />
           {user ? (
             <div className="flex items-center gap-2">
@@ -155,8 +157,9 @@ export function Nav() {
           )}
         </nav>
 
-        {/* Mobile: theme + hamburger */}
+        {/* Mobile: appearance + theme + hamburger */}
         <div className="flex items-center gap-1.5 sm:hidden">
+          <Appearance />
           <ThemeToggle />
           <button
             onClick={() => setMenuOpen((o) => !o)}

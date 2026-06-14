@@ -10,11 +10,20 @@ const config: Config = {
         display: ["var(--font-display)", "Georgia", "serif"],
       },
       colors: {
-        // Primary: teal → emerald. Distinctive, calm, "academic".
+        // Primary: themeable at runtime via CSS variables (see :root in
+        // globals.css and lib/accent.ts). Defaults to teal.
         brand: {
-          50: "#ecfdf6", 100: "#d1fae9", 200: "#a7f3d6", 300: "#6ee7bd",
-          400: "#34d3a1", 500: "#13b886", 600: "#08966d", 700: "#077859",
-          800: "#0a5f48", 900: "#0a4e3c", 950: "#022c22",
+          50: "rgb(var(--brand-50) / <alpha-value>)",
+          100: "rgb(var(--brand-100) / <alpha-value>)",
+          200: "rgb(var(--brand-200) / <alpha-value>)",
+          300: "rgb(var(--brand-300) / <alpha-value>)",
+          400: "rgb(var(--brand-400) / <alpha-value>)",
+          500: "rgb(var(--brand-500) / <alpha-value>)",
+          600: "rgb(var(--brand-600) / <alpha-value>)",
+          700: "rgb(var(--brand-700) / <alpha-value>)",
+          800: "rgb(var(--brand-800) / <alpha-value>)",
+          900: "rgb(var(--brand-900) / <alpha-value>)",
+          950: "rgb(var(--brand-950) / <alpha-value>)",
         },
         // Accent: violet, used sparingly for highlights/AI.
         accent: {

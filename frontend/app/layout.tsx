@@ -54,12 +54,16 @@ export const viewport = {
   ],
 };
 
-// Applied before paint to avoid a light->dark flash.
+// Applied before paint to avoid a flash of theme/accent/density.
 const themeScript = `
 (function(){try{
+  var d=document.documentElement;
   var t=localStorage.getItem('rp_theme');
   if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
-  if(t==='dark')document.documentElement.classList.add('dark');
+  if(t==='dark')d.classList.add('dark');
+  var p=JSON.parse(localStorage.getItem('rp_accent_palette')||'null');
+  if(p&&p.length===11){var s=['50','100','200','300','400','500','600','700','800','900','950'];for(var i=0;i<11;i++)d.style.setProperty('--brand-'+s[i],p[i]);}
+  if(localStorage.getItem('rp_density')==='compact')d.style.fontSize='14.5px';
 }catch(e){}})();
 `;
 
