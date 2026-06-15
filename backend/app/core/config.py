@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     SCHOLAR_USE_PROXY: bool = False  # free proxies: slow, may dodge some blocks
     CORE_API_KEY: Optional[str] = None  # core.ac.uk
 
+    # --- Extra source credentials (all optional; sources self-skip if unset) ---
+    ADS_TOKEN: Optional[str] = None        # NASA ADS (astronomy) — free token
+    UNPAYWALL_EMAIL: Optional[str] = None  # Unpaywall OA lookup; falls back to OPENALEX_MAILTO
+    KAGGLE_USERNAME: Optional[str] = None  # Kaggle datasets — free API token
+    KAGGLE_KEY: Optional[str] = None
+
     # --- Auth (Google OAuth, optional) ---
     GOOGLE_CLIENT_ID: Optional[str] = None
     GOOGLE_CLIENT_SECRET: Optional[str] = None

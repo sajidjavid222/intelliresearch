@@ -1,9 +1,12 @@
 "use client";
 
 const SOURCES = [
-  "arXiv", "Semantic Scholar", "OpenAlex", "PubMed", "Crossref",
-  "DBLP", "DOAJ", "Hugging Face", "GitHub", "Papers With Code",
-  "OpenML", "Google Patents", "NSF",
+  "arXiv", "Semantic Scholar", "OpenAlex", "PubMed", "Europe PMC",
+  "Crossref", "DBLP", "DOAJ", "CORE", "bioRxiv", "OpenReview",
+  "INSPIRE-HEP", "HAL", "OpenAIRE", "Unpaywall",
+  "Hugging Face", "GitHub", "Papers With Code", "OpenML",
+  "Zenodo", "DataCite", "Harvard Dataverse", "Figshare", "Dryad",
+  "UCI ML Repo", "Google Patents", "NSF",
 ];
 
 /** An auto-scrolling, edge-faded marquee of live data sources (social proof). */

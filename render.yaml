@@ -49,6 +49,13 @@ services:
         sync: false                    # optional, for Google sign-in
       - key: FRONTEND_ORIGIN
         sync: false                    # set to the frontend URL after deploy
+      # Optional extra-source credentials (sources self-skip when unset):
+      - key: ADS_TOKEN
+        sync: false                    # NASA ADS (astronomy) — free token at ui.adsabs.harvard.edu
+      - key: KAGGLE_USERNAME
+        sync: false                    # Kaggle datasets — free API token (kaggle.com/settings)
+      - key: KAGGLE_KEY
+        sync: false
 
   # ---------------- Frontend (Next.js) ----------------
   - type: web

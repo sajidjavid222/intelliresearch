@@ -586,7 +586,7 @@ export default function Home() {
               {[
                 { icon: <Icon.paper className="h-5 w-5" />, t: "Discover & rank", d: "arXiv, Semantic Scholar, OpenAlex, PubMed & more — with seminal-paper detection.", b: "e.g. “graph neural networks” → dozens of ranked papers, with seminal works flagged." },
                 { icon: <Icon.chat className="h-5 w-5" />, t: "Chat, review & propose", d: "Citation-grounded answers, a full literature review, and a ready-to-edit research proposal (PDF/Word).", b: "Ask a question → a cited answer, then a full literature review and a proposal draft." },
-                { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go.", b: "One query fans out to 10 agents across 12+ live sources, all in parallel." },
+                { icon: <Icon.grant className="h-5 w-5" />, t: "Funding & beyond", d: "Grants, CFPs, datasets, code, patents & collaborators in one go.", b: "One query fans out to 10 agents across 25+ live sources, all in parallel." },
               ].map((c, i) => (
                 <FlipCard
                   key={c.t}

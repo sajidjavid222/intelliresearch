@@ -74,29 +74,68 @@ async def paper_discovery_agent(query: str, limit: int = 15) -> list[Paper]:
         papers_extra.search_pubmed(query, per_source),
         papers_extra.search_doaj(query, per_source),
         papers_extra.search_dblp(query, per_source),
+        papers_extra.search_europepmc(query, per_source),
+        papers_extra.search_biorxiv(query, per_source),
+        papers_extra.search_openaire(query, per_source),
+        papers_extra.search_inspire(query, per_source),
+        papers_extra.search_hal(query, per_source),
+        papers_extra.search_ads(query, per_source),
+        papers_extra.search_openreview(query, per_source),
     )
     deduped = dedupe_papers(raw)
     ranked = rank_papers(query, deduped)
-    return ranked[:limit]
+    top = ranked[:limit]
+    # Unpaywall: backfill a free OA PDF link for top results that lack one.
+    return await papers_extra.enrich_with_unpaywall(top, limit=min(10, len(top)))
 
 
 # ---------- Agent 3: Dataset Discovery ----------
+def _interleave_datasets(lists: list[list[Dataset]], limit: int) -> list[Dataset]:
+    """Round-robin across sources (and dedupe by name) so the result is a varied
+    mix — each repository contributes its top hit before any source repeats —
+    instead of one prolific source (e.g. Hugging Face) filling every slot."""
+    seen: set[str] = set()
+    out: list[Dataset] = []
+    i = 0
+    while len(out) < limit and any(i < len(lst) for lst in lists):
+        for lst in lists:
+            if i >= len(lst):
+                continue
+            d = lst[i]
+            key = (d.name or "").strip().lower()
+            if key and key not in seen:
+                seen.add(key)
+                out.append(d)
+                if len(out) >= limit:
+                    break
+        i += 1
+    return out
+
+
 async def dataset_discovery_agent(query: str, limit: int = 12) -> list[Dataset]:
-    raw = await _gather(
-        datasets.search_huggingface(query, limit),
-        datasets.search_paperswithcode_datasets(query, limit),
-        datasets.search_openml(query, limit),
-    )
+    async def fan_out(q: str) -> list[list[Dataset]]:
+        results = await asyncio.gather(
+            datasets.search_huggingface(q, limit),
+            datasets.search_paperswithcode_datasets(q, limit),
+            datasets.search_openml(q, limit),
+            datasets.search_zenodo(q, limit),
+            datasets.search_datacite(q, limit),
+            datasets.search_dataverse(q, limit),
+            datasets.search_figshare(q, limit),
+            datasets.search_dryad(q, limit),
+            datasets.search_uci(q, limit),
+            datasets.search_kaggle(q, limit),
+            return_exceptions=True,
+        )
+        return [r if isinstance(r, list) else [] for r in results]
+
+    lists = await fan_out(query)
     # Sparse sources often miss a long topic; retry with core keywords.
-    if not raw:
+    if not any(lists):
         core = _core_terms(query, 2)
         if core != query:
-            raw = await _gather(
-                datasets.search_huggingface(core, limit),
-                datasets.search_paperswithcode_datasets(core, limit),
-                datasets.search_openml(core, limit),
-            )
-    return raw[:limit]
+            lists = await fan_out(core)
+    return _interleave_datasets(lists, limit)
 
 
 # ---------- Agent 6: Open-Source Implementation ----------

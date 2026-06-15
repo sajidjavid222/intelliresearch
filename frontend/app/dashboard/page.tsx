@@ -160,7 +160,7 @@ export default function Dashboard() {
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-500 text-xs text-white">1</span>{" "}
                 Run a search
               </span>
-              <p className="mt-1 text-xs text-ink-500">Explore 200M+ papers across 12 sources.</p>
+              <p className="mt-1 text-xs text-ink-500">Explore 200M+ papers across 25+ sources.</p>
             </a>
             <div className="rounded-xl border border-white/60 bg-white/60 p-3 dark:border-ink-800 dark:bg-ink-900/40">
               <span className="flex items-center gap-2 text-sm font-semibold">

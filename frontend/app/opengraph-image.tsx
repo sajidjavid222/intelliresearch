@@ -60,7 +60,7 @@ export default function OpengraphImage() {
         <div style={{ display: "flex", gap: "28px", marginTop: 48, fontSize: 30, fontWeight: 600, color: "rgba(255,255,255,0.95)" }}>
           <span>200M+ papers</span>
           <span style={{ opacity: 0.5 }}>/</span>
-          <span>12 sources</span>
+          <span>25+ sources</span>
           <span style={{ opacity: 0.5 }}>/</span>
           <span>10 agents</span>
         </div>
